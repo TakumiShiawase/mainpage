@@ -2039,20 +2039,19 @@ function Notifications() {
 }
 
 function ReaderMain() {
-  // Предполагается, что у вас есть эти хуки
-  // Обновите их, если они называются иначе или находятся в других файлах
-  const padding = usePadding();
-  const lineHeight = useLineHeight();
-  const fontFamily = useFont();
+
+  const {padding} = usePadding();
+  const {lineHeight} = useLineHeight();
+  const {fontFamily} = useFont();
   
   const [book, setBook] = useState(null);
   const { book_id, chapter_id } = useParams();
-  const token = localStorage.getItem('token'); // Убедитесь, что у вас есть токен доступа
+  const token = localStorage.getItem('token');
 
   const style = {
     paddingLeft: `${padding.left}px`,
     paddingRight: `${padding.right}px`,
-    lineHeight: `${lineHeight}px`,
+    lineHeight: `${lineHeight * 100}%`,
     fontFamily,
   };
 
