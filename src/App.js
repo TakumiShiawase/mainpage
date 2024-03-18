@@ -1593,29 +1593,50 @@ function ProfileSettings() {
 
   const handleFirstNameChange = (e) => {
     const value = e.target.value;
-    setFirstName(value);
-    setProfileChangeData((prevData) => ({
-      ...prevData,
-      first_name: value,
-    }));
+    if (value !== firstName) {
+      setFirstName(value);
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        first_name: value,
+      }));
+    } else {
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        first_name: profileData.user.first_name,
+      }));
+    }
   };
   
   const handleLastNameChange = (e) => {
     const value = e.target.value;
-    setLastName(value);
-    setProfileChangeData((prevData) => ({
-      ...prevData,
-      last_name: value,
-    }));
+    if (value !== lastName) {
+      setLastName(value);
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        last_name: value,
+      }));
+    } else {
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        last_name: profileData.user.last_name,
+      }));
+    }
   };
   
   const handleAtUsernameChange = (e) => {
     const value = e.target.value;
-    setAtUsername(value);
-    setProfileChangeData((prevData) => ({
-      ...prevData,
-      username: value,
-    }));
+    if (value !== username) {
+      setAtUsername(value);
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        at_username: value,
+      }));
+    } else {
+      setProfileChangeData((prevData) => ({
+        ...prevData,
+        at_username: profileData.user.at_username,
+      }));
+    }
   };
   const handleDobVisibilityChange = (e) => {
     const visibilityOption = parseInt(e.target.value);
@@ -1625,7 +1646,7 @@ function ProfileSettings() {
     }));
   };
   
-  // Обработчик изменения пола
+
   const handleGenderChange = (e) => {
     const genderOption = e.target.value;
     setProfileData((prevData) => ({
