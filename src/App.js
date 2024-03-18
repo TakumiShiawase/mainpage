@@ -1615,7 +1615,7 @@ function ProfileSettings() {
     setAtUsername(value);
     setProfileChangeData((prevData) => ({
       ...prevData,
-      at_username: value !== profileData.user.at_username ? value : profileData.user.at_username,
+      username: value !== profileData.user.at_username ? value : profileData.user.at_username,
     }));
   };
   const handleDobVisibilityChange = (e) => {
@@ -2195,7 +2195,7 @@ function TwoStepRegistration() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
-  const [code, setCode] = useState('');
+  const [verification_code, setCode] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
 
   const handleFirstStepSubmit = (e) => {
@@ -2214,12 +2214,32 @@ function TwoStepRegistration() {
         last_name: last_name,
         dob_month: dob_month,
         dob_year: dob_year,
-        code: code
       });
       setCurrentStep(3);
       console.log('Регистрация успешно завершена');
+      console.log(email)
+      console.log(password)
+      console.log(password2)
+      console.log(first_name)
+      console.log(last_name)
+      console.log(dob_month)
+      console.log(dob_year)
     } catch (error) {
       console.error('Ошибка регистрации:', error);
+    }
+  };
+  const CodeSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${apiUrl}/users/api/register_verification/`, {
+        verification_code: verification_code
+      });
+      setCurrentStep(3);
+      console.log('Регистрация успешно завершена');
+      console.log(verification_code)
+    } catch (error) {
+      console.error('Ошибка регистрации:', error);
+      console.log(verification_code)
     }
   };
 
@@ -2239,7 +2259,16 @@ function TwoStepRegistration() {
                 <option value="" disabled>Month</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
-                {/* Добавьте остальные месяцы */}
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
               </select>
               <input name="dob_year" type='number' placeholder='Year' className='year' value={dob_year} onChange={(e) => setDateOfBirthYear(e.target.value)} />
               <div><button type='submit' className='next-button'>Next</button></div>
@@ -2273,11 +2302,11 @@ function TwoStepRegistration() {
           <div className='formWrapper'>
             <span className='logo-register'><img src={Logo} alt="Logo" /></span>
             <span className='finish-title'>We have sent a four<br /> digit code to your<br />  email</span>
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form>
               <span className='finish-text'>Enter code</span>
-              <input type="number" placeholder='' className='register-code' value={code} onChange={(e) => setCode(e.target.value)} />
+              <input type="number" placeholder='' className='register-code' value={verification_code} onChange={(e) => setCode(e.target.value)} />
               <button className='back-button' type="button" onClick={() => setCurrentStep(2)}>Back</button>
-              <Link to='/login'><button type='submit' className='next-button'>Finish</button></Link>
+              <Link to='/login'><button type='submit' className='next-button' onClick={CodeSubmit}>Finish</button></Link>
             </form>
           </div>
         </div>
@@ -2444,28 +2473,64 @@ function Security() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [repeatPassword, setRepeatPassword] = useState('');
+  const [code, setVerificationCode] = useState('');
+  const [allDataSaved, setAllDataSaved] = useState(false);
 
   const saveSettings = async () => {
       try {
-          const token = localStorage.getItem('token'); // Предположим, что вы храните токен в локальном хранилище
+          const token = localStorage.getItem('token');
           const response = await axios.post(
               'http://127.0.0.1:8000/users/api/settings/security/',
               {
                   current_password: currentPassword,
                   new_password: newPassword,
-                  repeat_password: repeatPassword
+                  confirm_new_password: repeatPassword
               },
               {
                   headers: {
                       Authorization: `Bearer ${token}`
                   }
-              }
+              },
+              
           );
           console.log(response.data);
+          setAllDataSaved(true);
       } catch (error) {
           console.error('Ошибка при сохранении настроек безопасности:', error);
+          console.log(currentPassword);
+          console.log(newPassword);
+          console.log(repeatPassword);
 
       }
+  };
+
+  const handleVerificationCodeChange = (e) => {
+    const code = e.target.value;
+    setVerificationCode(code);
+    if (code.length === 6) {
+      sendVerificationCode(code);
+    }
+  };
+
+  const sendVerificationCode = async (code) => {
+    try {
+      const token = localStorage.getItem('token'); 
+  
+      const response = await axios.post(
+        'http://127.0.0.1:8000/users/api/settings/verify-password-change/',
+        { verification_code: code },
+        {
+          headers: {
+            Authorization: `Bearer ${token}` 
+          }
+        }
+      );
+      console.log('Ответ от сервера:', response.data);
+      setAllDataSaved(false);
+    } catch (error) {
+      console.error('Ошибка при отправке верификационного кода:', error);
+      console.log(code);
+    }
   };
 
   const discardChanges = () => {
@@ -2494,6 +2559,19 @@ function Security() {
                           </div>
                       </div>
                   </li>
+                  {allDataSaved && (
+            <li className="security-info-li">
+              <div className='security-change-pw'>
+                <label className='security-pw-label'>Verification Code</label>
+                <input
+                  type="text"
+                  className='security-input'
+                  value={code}
+                  onChange={handleVerificationCodeChange}
+                />
+              </div>
+            </li>
+          )}
               </ul>
           </div>
           <div className="change-buttons_sec">
