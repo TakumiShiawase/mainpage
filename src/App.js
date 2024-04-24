@@ -1270,6 +1270,10 @@ function AddComment() {
   
       console.log('Comment and image added successfully:', response.data);
   
+      // Очистка поля ввода и выбранного изображения
+      event.target.elements.comment.value = '';
+      setSelectedFile(null);
+  
     } catch (error) {
       console.error('Error adding comment and image:', error);
     }
