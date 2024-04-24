@@ -125,7 +125,7 @@ function MainPage(){
         try {
             const decodedToken = jwtDecode(token);
             const username = decodedToken.username;
-            const response = await axios.get(`${apiUrl}/users/api/${username}/`, {
+            const response = await axios.get(`${apiUrl}/users/api/${username}/notifications/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -234,7 +234,7 @@ function MainPage(){
           {menuOpen && (
             <div ref={menuRef} className="menu">
               <Link to='/profile'><button className='menu_button'>Profile</button></Link>
-              <button className='menu_button'>Settings</button>
+              <Link to='/profile/settings'><button className='menu_button'>Settings</button></Link>
               <button className='menu_button' onClick={handleLogout}>Logout</button>
             </div>
           )}
@@ -882,7 +882,7 @@ function BookReviews({book_id}) {
   useEffect(() => {
     const fetchReviews = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/book_detail/${book_id}/reviews/`);
+        const response = await axios.get(`${apiUrl}/api/book_detail/${book_id}/reviews/`);
         setReviews(response.data);
       } catch (error) {
         console.error('Error fetching reviews:', error);
@@ -900,7 +900,7 @@ function BookReviews({book_id}) {
         return;
       }
 
-      const response = await axios.post(`http://127.0.0.1:8000/api/book_detail/${book_id}/reviews/`, {
+      const response = await axios.post(`${apiUrl}/api/book_detail/${book_id}/reviews/`, {
         plot_rating: plotRating,
         characters_rating: charactersRating,
         main_character_rating: mainCharacterRating,
@@ -1697,7 +1697,7 @@ function List() {
   useEffect(() => {
     const decodedToken = jwtDecode(token);
     const username = decodedToken.username
-    axios.get(`http://127.0.0.1:8000/users/api/${username}/following/`)
+    axios.get(`${apiUrl}/users/api/${username}/following/`)
       .then(response => {
         setFollowing(response.data);
       })
@@ -3014,7 +3014,7 @@ function Privacy() {
       }
   
       const response = await axios.post(
-        'http://127.0.0.1:8000/users/api/settings/security/',
+        `${apiUrl}/users/api/settings/security/`,
         {
           current_password: currentPassword,
           new_password: newPassword,
@@ -3053,7 +3053,7 @@ function Privacy() {
       const token = localStorage.getItem('token'); 
   
       const response = await axios.post(
-        'http://127.0.0.1:8000/users/api/settings/verify-password-change/',
+        `${apiUrl}/users/api/settings/verify-password-change/`,
         { verification_code: code },
         {
           headers: {
@@ -3082,7 +3082,7 @@ function Privacy() {
         return;
     }
 
-    axios.get('http://127.0.0.1:8000/users/api/settings/privacy/', {
+    axios.get(`${apiUrl}/users/api/settings/privacy/`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -3098,7 +3098,7 @@ function Privacy() {
   const handleSave = async () => {
     try {
         const response = await axios.put(
-            'http://127.0.0.1:8000/users/api/settings/privacy/',
+            `${apiUrl}/users/api/settings/privacy/`,
             {
                 auto_add_reading: autoAddReading,
                 library_visibility: libraryVisibility
@@ -3118,7 +3118,7 @@ function Privacy() {
 };
 
   const handleDiscard = () => {
-      axios.get('http://127.0.0.1:8000/users/api/settings/privacy/')
+      axios.get(`${apiUrl}/users/api/settings/privacy/`)
           .then(response => {
               setAutoAddReading(response.data.auto_add_reading);
               setLibraryVisibility(response.data.library_visibility);
@@ -3209,7 +3209,7 @@ function Security() {
       try {
           const token = localStorage.getItem('token');
           const response = await axios.post(
-              'http://127.0.0.1:8000/users/api/settings/security/',
+              `${apiUrl}/users/api/settings/security/`,
               {
                   current_password: currentPassword,
                   new_password: newPassword,
@@ -3246,7 +3246,7 @@ function Security() {
       const token = localStorage.getItem('token'); 
   
       const response = await axios.post(
-        'http://127.0.0.1:8000/users/api/settings/verify-password-change/',
+        `${apiUrl}/users/api/settings/verify-password-change/`,
         { verification_code: code },
         {
           headers: {
@@ -3320,7 +3320,7 @@ function Notifications() {
   useEffect(() => {
     const fetchNotificationsData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/users/api/settings/notifications/', {
+        const response = await axios.get(`${apiUrl}/users/api/settings/notifications/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -3342,7 +3342,7 @@ function Notifications() {
 
   const handleSaveChanges = async () => {
     try {
-      await axios.post('http://127.0.0.1:8000/users/api/settings/notifications/update/', notificationsData, {
+      await axios.post(`${apiUrl}/users/api/settings/notifications/update/`, notificationsData, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -4062,7 +4062,7 @@ function StudioBooks() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/`, {
+        const response = await axios.get(`${apiUrl}/api/studio/books/`, {
           headers: {
             'Authorization': `Bearer ${token}` 
           }
@@ -4080,7 +4080,7 @@ function StudioBooks() {
 
   const updateVisibility = async (bookId, newVisibility) => {
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/studio/books/${bookId}/`, {
+      const response = await axios.patch(`${apiUrl}/api/studio/books/${bookId}/`, {
         visibility: newVisibility
       }, {
         headers: {
@@ -4270,7 +4270,7 @@ function StudioComments() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/studio/comments/', {
+        const response = await axios.get(`${apiUrl}/api/studio/comments/`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`, 
           },
@@ -4987,7 +4987,7 @@ function MainHistory() {
 
   const clearHistory = async () => {
     try {
-      await axios.post('http://127.0.0.1:8000/api/history/delete/', {}, {
+      await axios.post(`${apiUrl}/api/history/delete/`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -5112,7 +5112,7 @@ function HistoryBar({ clearHistory }) {
   useEffect(() => {
     const fetchHistoryRecordState = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:8000/api/history/record/', {
+        const response = await axios.get(`${apiUrl}/api/history/record/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -5132,7 +5132,7 @@ function HistoryBar({ clearHistory }) {
   };
   const toggleRecord = async () => {
     try {
-      await axios.post('http://127.0.0.1:8000/api/history/record/', {}, {
+      await axios.post(`${apiUrl}/api/history/record/`, {}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -5176,7 +5176,7 @@ function StudioSetting({book_id}) {
 
   const updateSettings = async (newSettings) => {
     try {
-      const response = await axios.patch(`http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`, newSettings, {
+      const response = await axios.patch(`${apiUrl}/api/studio/books/${book_id}/settings/`, newSettings, {
         headers: {
           'Authorization': `Bearer ${token}` 
         }
@@ -5740,7 +5740,7 @@ function UploadButton() {
     const formData = new FormData();
     formData.append('file', file);
 
-    axios.post('http://127.0.0.1:8000/api/studio/books/upload/', formData, {
+    axios.post(`${apiUrl}/api/studio/books/upload/`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
@@ -5775,7 +5775,7 @@ function News() {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/news/', {
+    axios.get(`${apiUrl}/api/news/`, {
       headers: {
         Authorization: `Bearer ${token}` 
       }
