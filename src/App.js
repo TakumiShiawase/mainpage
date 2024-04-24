@@ -1256,7 +1256,9 @@ function AddComment() {
       }
   
       const formData = new FormData();
-      formData.append('text', commentInput);
+      if (commentInput) {
+        formData.append('text', commentInput);
+      }
       if (selectedFile) {
         formData.append('image', selectedFile);
       }
