@@ -220,7 +220,7 @@ function MainPage(){
             {Array.isArray(notifications) && notifications.map((notification, index) => (
                 <div className='drop_news' key={index}>
 
-                    <div className='drop_news_title'>{notification.book_name}:<div className='drop_news_chapter'>{notification.chapter_title}</div></div>
+<Link to={`/book_detail/${notification.sender}`}><div className='drop_news_title'>{notification.book_name}:<div className='drop_news_chapter'>{notification.chapter_title}</div></div></Link>
                     <div className='drop_news_title'>{notification.formatted_timestamp}</div>
                 </div>
             ))}
@@ -1246,28 +1246,30 @@ function AddComment() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     const commentInput = event.target.elements.comment.value;
-
+  
     try {
       const token = localStorage.getItem('token'); 
       if (!token) {
         throw new Error('Access token not found');
       }
-
+  
       const formData = new FormData();
       formData.append('text', commentInput);
-      formData.append('image', selectedFile);
-
+      if (selectedFile) {
+        formData.append('image', selectedFile);
+      }
+  
       const response = await axios.post(`${apiUrl}/api/book_detail/${book_id}/comments/`, formData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
       });
-
+  
       console.log('Comment and image added successfully:', response.data);
-
+  
     } catch (error) {
       console.error('Error adding comment and image:', error);
     }
@@ -1313,6 +1315,7 @@ function BookComment({ book_id }) {
     const fetchComments = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/book_detail/${book_id}/comments/`, {
+          
         });
         setComments(response.data.comments);
         setLoading(false);

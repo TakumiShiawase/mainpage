@@ -1690,7 +1690,6 @@ input:-internal-autofill-selected {
 
 .profile__book {
   display: flex;
-  overflow: auto;
 }
 
 .books__views{ 
