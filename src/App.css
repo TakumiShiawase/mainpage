@@ -88,14 +88,20 @@ button:active {
 .logo {
   width: 227px;
   height: 100px;
+  padding-top: 10px;
 }
 
+body {
+  background: linear-gradient(to left, #000000 85%, #290038);
+}
 
 .main {
   height: 100vh;
-  background: linear-gradient(to left, #000000 85%, #290038);
   background-repeat: no-repeat;
+}
 
+.books__items{
+  min-height: 80vh;
 }
 
 .main__content {
@@ -111,12 +117,21 @@ button:active {
   line-height: normal;
   width: 100%;
 }
+
+.history__container{
+  overflow: auto;
+  padding-bottom: 40px;
+}
+
+/* overflow-y: auto; 
+-ms-overflow-style: none;
+scrollbar-width: none;    */
 .books {
   width: 100%;
   padding-left: 50px;
-  overflow: auto;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  overflow-y: auto; 
+-ms-overflow-style: none;
+scrollbar-width: none;   
   margin-top: 100px;
 }
 .bookpage__books {
@@ -1108,6 +1123,8 @@ input:-internal-autofill-selected {
 
 .description{
   margin-top: 30px;
+  min-height: 80vh;
+  padding-bottom: 50px;
 }
 .description-none {
   color: #888;
@@ -1131,8 +1148,11 @@ input:-internal-autofill-selected {
   margin-right: 20px;
 }
 .studio_login{
+  position: absolute;
   width: 42px;
   height: 42px;
+  top: 30px; 
+  right: 50px; 
 }
 
 .studio_modal {
@@ -1213,10 +1233,11 @@ input:-internal-autofill-selected {
 .book-item {
   display: flex;
   flex-wrap: wrap;
+  height: 94%;
   overflow-y: auto; 
   -ms-overflow-style: none;
   scrollbar-width: none;
-  margin-bottom: 100px;
+  padding-bottom: 100px;
 }
 
 
@@ -1720,7 +1741,9 @@ input:-internal-autofill-selected {
   margin-top: 35px;
   overflow-y: auto; 
   -ms-overflow-style: none;
-  scrollbar-width: none;  
+  scrollbar-width: none; 
+  min-height: 80vh;
+  padding-bottom: 50px; 
 }
 
 .profile__book-img {
@@ -2243,6 +2266,7 @@ button {
 .logo-mini {
   fill: var(--logo-color);
   position: relative;
+  padding-top: 10px;
 }
 
 
@@ -2390,6 +2414,7 @@ p {
 .container {
   display: flex;
   margin: 0 auto;
+  width: 99%;
 }
 .burger-icon {
   fill: var(--svg-color);
@@ -2983,7 +3008,25 @@ p {
   align-items: self-start;
   padding-bottom: 27px;
 }
-
+.menu_stud{
+  position: absolute;
+  left: -178px;
+  top: calc(100% + 5px); 
+  background-color: black;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  display: flex;
+  flex-direction: column; 
+  width: 200px;
+  height: 100px;
+  font-size: 42px;
+  justify-content: space-between;
+  align-items: self-start;
+  padding-bottom: 27px;
+}
 .menu_button {
   font-size: 32px;
   height: 65px;
@@ -3025,6 +3068,8 @@ p {
 }
 .profile-series{
   margin-top: 20px;
+  min-height: 80vh;
+  padding-bottom: 50px;
 }
 .description {
   display: flex;
@@ -3140,10 +3185,12 @@ p {
 
 .history{
   width: 100%;
+  height: 98%;
 }
 .history_main {
   display: flex;
   width: 100%;
+  height: 98%;
 }
 
 
@@ -3207,11 +3254,12 @@ p {
 }
 
 .history__content {
-  height: calc(100vh - 60px);
   overflow-y: auto; 
   -ms-overflow-style: none;
   scrollbar-width: none; 
   width: 100%;
+  height: 98%;
+  padding-bottom: 150px;
 }
 
 .history_day {
@@ -4322,10 +4370,12 @@ a {
 .studio__comment_text {
   color: white;
   font-size: 24px;
+  word-wrap: break-word;
+  width: 90%;
 }
 
 .studio__comments_page {
-  width: 100%;
+  width: 80%;
   margin-left: 40px;
   margin-right: 40px;
 }
@@ -4352,7 +4402,7 @@ a {
 }
 
 .studio__comments_views{
-  width: 70%;
+  width: 55%;
   margin: 20px;
 }
 
@@ -4361,19 +4411,23 @@ a {
   width: 10%;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
+  margin-top: 30px;
 }
 
 .studio__comments_views_book{
   display: flex;
-  width: 20%;
+  width: 22%;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
-
+.studio__comments_container{
+  padding: 10px;
+  overflow: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
 .studio__reply {
   color: #BD00FF;
@@ -4460,6 +4514,7 @@ rect {
 }
 .news__content{
   width: 100%;
+  height: 100%;
   display: flex;
   margin-top: 30px;
 }
@@ -4486,7 +4541,7 @@ rect {
 
 .news__books {
   width: 100%;
-  height: 100vh;
+  height: 93%;
   overflow-y: auto; 
   -ms-overflow-style: none;
   scrollbar-width: none;   
@@ -4494,6 +4549,7 @@ rect {
 
 .news__book {
   width: 50%;
+  height: 100%;
 }
 .news__details {
   display: flex;
@@ -4555,7 +4611,7 @@ rect {
   position: relative;
   width: 80%; /* Установите желаемую ширину слайдера здесь */
   height: 10px;
-  margin: 50px auto;
+  margin: 25px auto;
 }
 
 .slider-track {

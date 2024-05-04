@@ -42,6 +42,32 @@ const apiUrl = 'http://127.0.0.1:8000'
 
 
 function App() {
+  const updateAccessToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        const response = await axios.post(`${apiUrl}/users/api/token/refresh/`, {
+          refresh: refreshToken,
+        });
+        localStorage.setItem('token', response.data.access);
+      }
+    } catch (error) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
+    }
+  };
+
+  useEffect(() => {
+    updateAccessToken();
+
+    const interval = setInterval(() => {
+      updateAccessToken();
+    }, 25 * 60 * 1000); // Обновляем токен каждые 25 минут
+
+    return () => clearInterval(interval);
+  }, []);
+
+
   return (
     <Router>
       <SearchProvider>
@@ -164,6 +190,7 @@ function MainPage(){
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setIsLoggedIn(false);
     navigate('/');
     window.location.reload();
@@ -458,6 +485,7 @@ function Main() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setIsLoggedIn(false);
     navigate('/');
   };
@@ -616,7 +644,6 @@ function BookItem() {
 const Sidebar = () => {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [selectedColor, setSelectedColor] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -647,111 +674,103 @@ const Sidebar = () => {
     };
   }, []);
 
-
-  useEffect(() => {
-    const navigation = document.getElementById('navigation');
-    if (location.hash && navigation) {
-      navigation.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [location]);
-
   const getButtonClass = (color) => {
     if (color === 'home' && location.pathname === '/') {
       return 'pool-button selected';
     }
-    return selectedColor === color ? 'pool-button selected' : 'pool-button';
+
+    if (location.pathname === `/${color}`) {
+      return 'pool-button selected';
+    }
+
+    return 'pool-button';
   };
 
   return (
-
-      <div className="sidebar_main">
-        <ul className='sidebar-menu'>
-          <Link to={'/'}>
+    <div className="sidebar_main">
+      <ul className='sidebar-menu'>
+        <Link to={'/'}>
+          <li className='pool'>
+            <button
+              className={getButtonClass('home')}
+            >
+              <img className='pool_icon' src={Home} alt="Home" />
+              Home
+            </button>
+          </li>
+        </Link>
+        {isAuthenticated && (
+          <Link to="/profile">
             <li className='pool'>
               <button
-                className={getButtonClass('home')}
-                onClick={() => setSelectedColor('home')}
+                className={getButtonClass('profile')}
               >
-                <img className='pool_icon' src={Home} alt="Home" />
-                Home
+                <img className='pool_icon' src={Library} alt="Library" />
+                Library
               </button>
             </li>
           </Link>
+        )}
+        <Link to={'/history'}>
           {isAuthenticated && (
-            <Link to="/profile">
-              <li className='pool'>
-                <button
-                  className={getButtonClass('library')}
-                  onClick={() => setSelectedColor('library')}
-                >
-                  <img className='pool_icon' src={Library} alt="Library" />
-                  Library
-                </button>
-              </li>
-            </Link>
+            <li className='pool'>
+              <button
+                className={getButtonClass('history')}
+              >
+                <img className='pool_icon' src={History} alt="History" />
+                History
+              </button>
+            </li>
           )}
-          <Link to={'/history'}>
-            {isAuthenticated && (
-              <li className='pool'>
-                <button
-                  className={getButtonClass('history')}
-                  onClick={() => setSelectedColor('history')}
-                >
-                  <img className='pool_icon' src={History} alt="History" />
-                  History
-                </button>
-              </li>
-            )}
-          </Link>
-          <Link to={'/news'}>
+        </Link>
+        <Link to={'/news'}>
           {isAuthenticated && (
             <li className='pool'>
               <button
                 className={getButtonClass('news')}
-                onClick={() => setSelectedColor('news')}
               >
-                <img className='pool_icon' src={Bell} alt="History" />
+                <img className='pool_icon' src={Bell} alt="News" />
                 News
               </button>
             </li>
-             )}
-          </Link>
-          <hr className='sidebar_hr' />
+          )}
+        </Link>
+        <hr className='sidebar_hr' />
+        <div className='book_button'>
+          <button className='pool-button'>
+            <img className='pool_icon' src={Book} alt="Books" />
+            Books
+          </button>
+        </div>
+        <Books />
+        <hr className='sidebar_hr' />
+        {isAuthenticated && <div className='followings'>Followings</div>}
+        {isAuthenticated && <List />}
+        <hr className='sidebar_hr' />
+        {isAuthenticated && (
           <div className='book_button'>
-            <button className='pool-button'
-            >
-              <img className='pool_icon' src={Book} alt="Books" />
-              Books
-            </button>
+            <Link to={'/profile/settings'}>
+              <button
+                className={getButtonClass('settings')}
+              >
+                <img className='pool_icon' src={Setting} alt="Settings" />
+                Settings
+              </button>
+            </Link>
           </div>
-          <Books />
-          <hr className='sidebar_hr' />
-          {isAuthenticated && <div className='followings'>Followings</div>}
-          {isAuthenticated && <List />}
-          <hr className='sidebar_hr' />
-          {isAuthenticated &&<div className='book_button'>
-          <Link to={'/profile/settings'}><button
-              className={getButtonClass('settings')}
-              onClick={() => setSelectedColor('settings')}
-            >
-              <img className='pool_icon' src={Setting} alt="Settings" />
-              Settings
-            </button></Link>
-          </div>}
-          <div className='book_button'>
-            <button
-              className={getButtonClass('help')}
-              onClick={() => setSelectedColor('help')}
-            >
-              <img className='pool_icon' src={Help} alt="Help" />
-              Help
-            </button>
-          </div>
-        </ul>
-      </div>
+        )}
+        <div className='book_button'>
+          <button
+            className={getButtonClass('help')}
+          >
+            <img className='pool_icon' src={Help} alt="Help" />
+            Help
+          </button>
+        </div>
+      </ul>
+    </div>
   );
 };
-
 
 
 function Profile() {
@@ -2244,18 +2263,21 @@ function ProfileSettingsNav() {
     </div>
   );
 }
+
 function ProfileSettings() {
   const [profileData, setProfileData] = useState({
     user: {
       first_name: '',
       last_name: '',
       at_username: '',
+      profile_img: '', 
     }
   });
   const [profileChangeData, setProfileChangeData] = useState({
     first_name: '',
     last_name: '',
     username: '',
+    profile_img: '', 
   });
   const token = localStorage.getItem('token');
 
@@ -2340,6 +2362,23 @@ function ProfileSettings() {
 
   const [tempImage, setTempImage] = useState(null);
   const [finalImage, setFinalImage] = useState(null);
+  const [tempBanner, setTempBanner] = useState(null);
+const [finalBanner, setFinalBanner] = useState(null);
+
+const handleBannerUpload = (event) => {
+  const file = event.target.files[0];
+  const reader = new FileReader();
+  
+  reader.onload = () => {
+    const bannerDataUrl = reader.result;
+    setFinalBanner(bannerDataUrl); // Устанавливаем изображение для предпросмотра
+    setTempBanner(file); // Устанавливаем временное изображение для сохранения
+  };
+
+  if (file) {
+    reader.readAsDataURL(file);
+  }
+};
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -2347,7 +2386,7 @@ function ProfileSettings() {
     reader.onload = () => {
       const imageDataUrl = reader.result;
       setFinalImage(imageDataUrl); // Устанавливаем изображение для предпросмотра
-      setTempImage(imageDataUrl); // Устанавливаем временное изображение для сохранения
+      setTempImage(file); // Устанавливаем временное изображение для сохранения
     };
   
     if (file) {
@@ -2357,58 +2396,53 @@ function ProfileSettings() {
   
   const handleSave = async () => {
     try {
-      // Создаем новый объект FormData и добавляем в него данные профиля
       const formData = new FormData();
       formData.append('first_name', profileChangeData.first_name);
       formData.append('last_name', profileChangeData.last_name);
-      formData.append('username', profileChangeData.username);
+      formData.append('at_username', profileChangeData.username);
+      formData.append('display_dob_option', profileData.display_dob_option);
+      formData.append('gender', profileData.gender);
   
-      // Если есть временное изображение, добавляем его в FormData
-      if (tempImage) {
-        // Преобразуем строку данных обратно в Blob
-        const imageBlob = dataURLtoBlob(tempImage);
-  
-        // Создаем объект File из Blob
-        const imageFile = new File([imageBlob], 'profile.jpg', { type: 'image/jpeg' });
-  
-        // Добавляем файл изображения в FormData
-        formData.append('profileimg', imageFile);
+      // Проверяем, изменилось ли изображение профиля
+      if (finalImage !== null) {
+        formData.append('profile_img', finalImage);
       }
   
-      console.log("Данные перед отправкой на сервер:", formData);
+      // Проверяем, изменился ли баннер
+      if (finalBanner !== null) {
+        formData.append('banner_image', finalBanner);
+      }
   
       const response = await axios.put(`${apiUrl}/users/api/settings/user_settings/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data', // Указываем правильный тип содержимого
+          'Content-Type': 'multipart/form-data',
         },
       });
   
-      // ... оставшийся код ...
+      // Обновляем изображение в состоянии
+      if (response.status === 200) {
+        const { profile_img, banner_image } = response.data;
+        setProfileData(prevData => ({
+          ...prevData,
+          user: {
+            ...prevData.user,
+            profile_img,
+            banner_image
+          }
+        }));
+      }
+      
+      console.log('Успешно сохранено:', response.data);
     } catch (error) {
       console.error('Ошибка при сохранении профиля', error);
     }
   };
-  
-  // Функция для преобразования строки данных обратно в Blob
-  function dataURLtoBlob(dataurl) {
-    const parts = dataurl.split(',');
-    const contentType = parts[0].split(':')[1].split(';')[0];
-    const raw = window.atob(parts[1]);
-    const rawLength = raw.length;
-    const uInt8Array = new Uint8Array(rawLength);
-  
-    for (let i = 0; i < rawLength; ++i) {
-      uInt8Array[i] = raw.charCodeAt(i);
-    }
-  
-    return new Blob([uInt8Array], { type: contentType });
-  }
-
   return (
     <div className='profile-settings'>
       <div className="settings-views">Preview (This is how others see Your profile)</div>
-      <div className='profile-banner'><img src={profileData.banner_image} alt="#" className='banner-img'/></div>
+      <div className='profile-banner'><img src={finalBanner || profileData.banner_image} alt="#" className='banner-img'/>
+</div>
       <div className="profile-info">
         <div className='avatar'><img className='avatar-img' src={finalImage || profileData.profileimg} alt="#" /></div>
         <div className='user-info'>
@@ -2443,18 +2477,20 @@ function ProfileSettings() {
             <li className='change-li'>
               <p>Avatar</p>
               <form action="/upload" method='post' encType='multipart/form-data'>
-  <div className='avatar_upload'>
-    <label htmlFor="avatar">Upload</label>
-    <input id="avatar" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleImageUpload} />
-  </div>
-</form>
+                <div className='avatar_upload'>
+                  <label htmlFor="avatar">Upload</label>
+                  <input id="avatar" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleImageUpload} />
+                </div>
+              </form>
             </li>
             <li className='change-li'>
               <p>Banner</p>
               <form action="/upload" method='post' encType='multipart/form-data'>
-                <input type="file" name='img' accept='image/*' />
-                <input type="submit" value='Download' />
-              </form>
+    <div className='avatar_upload'>
+      <label htmlFor="banner">Upload</label>
+      <input id="banner" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleBannerUpload} />
+    </div>
+  </form>
             </li>
             <li className='change-li'>
               <label htmlFor='FirstName'>Firstname</label>
@@ -2487,26 +2523,26 @@ function ProfileSettings() {
               />
             </li>
             <li className='change-li'>
-      <label className='change-label'>Date of Birth</label>
-      <BirthSelector />
-    </li>
-    <li className='change-li'>
-      <label className='change-label'>Date of Birth Visibility</label>
-      <select className='change-input' onChange={handleDobVisibilityChange}>
-        <option value="1">No One</option>
-        <option value="2">Friends Only(Default)</option>
-        <option value="3">Everyone</option>
-      </select>
-    </li>
-    <li className='change-li'>
-      <label className='change-label'>Gender</label>
-      <select className='change-input' onChange={handleGenderChange}>
-        <option value="1">Not Specified</option>
-        <option value="2">Male</option>
-        <option value="3">Female</option>
-        <option value="4">Other</option>
-      </select>
-    </li>
+              <label className='change-label'>Date of Birth</label>
+              <BirthSelector />
+            </li>
+            <li className='change-li'>
+              <label className='change-label'>Date of Birth Visibility</label>
+              <select className='change-input' onChange={handleDobVisibilityChange}>
+                <option value="1">No One</option>
+                <option value="2">Friends Only(Default)</option>
+                <option value="3">Everyone</option>
+              </select>
+            </li>
+            <li className='change-li'>
+              <label className='change-label'>Gender</label>
+              <select className='change-input' onChange={handleGenderChange}>
+                <option value="1">Not Specified</option>
+                <option value="2">Male</option>
+                <option value="3">Female</option>
+                <option value="4">Other</option>
+              </select>
+            </li>
           </ul>
           <div className="change-buttons">
             <button className='save-button' onClick={handleSave}>Save</button>
@@ -2603,7 +2639,6 @@ function Login() {
   const [loggedIn, setLoggedIn] = useState(false);
 
 
-  
 
   const handleLogin = async () => {
     try {
@@ -2611,50 +2646,20 @@ function Login() {
         email,
         password,
       });
-  
+
       if (response.status === 200) {
-        const token = response.data.access;
-        localStorage.setItem('token', token.toString()); 
+        const { access, refresh } = response.data;
+        localStorage.setItem('token', access);
+        localStorage.setItem('refreshToken', refresh); 
         setLoggedIn(true);
         navigate('/');
       } else {
-       
+        console.error('Ошибка при входе', response);
       }
     } catch (error) {
       console.error('Ошибка при входе', error);
     }
   };
-
-  const explode = (event) => {
-    const letters = document.querySelectorAll('.letter');
-    letters.forEach((letter) => {
-      const dx = (Math.random() - 0.5) * 200;
-      const dy = (Math.random() - 0.5) * 200;
-      letter.style.transform = `translate(${dx}px, ${dy}px)`;
-    });
-  };
-
-  const reset = () => {
-    const letters = document.querySelectorAll('.letter');
-    letters.forEach((letter) => {
-      letter.style.transform = 'none';
-    });
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        handleLogin();
-      }
-    };
-  
-    window.addEventListener('keydown', handleKeyDown);
-    
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, []);
 
   return (
     <div className="formContainer">
@@ -2684,22 +2689,9 @@ function Login() {
 
           </span>
         </Link>
-        <span className="google">
-          <div className="google_button">
-            <a className="google-button">
-              <img className="google_icon" src={Google} alt="Google" />
-              Sign in via Google
-            </a>
-          </div>
-        </span>
-        <span className="google">
-          <div className="face_button">
-            <a className="face-button">
-              <img className="face_icon" src={Face} alt="Facebook" />
-              Sign in via Facebook
-            </a>
-          </div>
-        </span>
+        <span className="google">    <div className="google_button">        <a className="google-button" href="http://127.0.0.1:8000/users/api/accounts/google/login/">            <img className="google_icon" src={Google} alt="Google" />            Sign in via Google
+        </a>    </div></span><span className="facebook">    <div className="face_button">        <a className="face-button" href="http://127.0.0.1:8000/users/api/accounts/facebook/login/">            <img className="face_icon" src={Face} alt="Facebook" />            Sign in via Facebook
+        </a>    </div></span>
         <hr className="login_hr" />
         <form className="log-form">
           <input
@@ -3272,31 +3264,10 @@ function Privacy() {
 
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem('token'); 
 
-    if (!token) {
-
-        console.error('Токен не найден.');
-        return;
-    }
-
-    axios.get(`${apiUrl}/users/api/settings/privacy/`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        setAutoAddReading(response.data.auto_add_reading);
-        setLibraryVisibility(response.data.library_visibility);
-    })
-    .catch(error => {
-        console.error('Ошибка при загрузке данных с сервера:', error);
-    });
-}, []);
-  const handleSave = async () => {
-    try {
-        const response = await axios.put(
+useEffect(() => {
+    if (token !== null) {
+        axios.put(
             `${apiUrl}/users/api/settings/privacy/`,
             {
                 auto_add_reading: autoAddReading,
@@ -3307,14 +3278,51 @@ function Privacy() {
                     Authorization: `Bearer ${token}`
                 }
             }
-        );
-        console.log(response.data);
-
-    } catch (error) {
-        console.error('Ошибка при сохранении настроек:', error);
-
+        )
+        .then(response => {
+            console.log('Успешно сохранено:', response.data);
+        })
+        .catch(error => {
+            console.error('Ошибка при сохранении настроек:', error);
+        });
     }
+}, [autoAddReading, token]);
+
+// Обработчик изменения libraryVisibility
+useEffect(() => {
+    if (token !== null) {
+        axios.put(
+            `${apiUrl}/users/api/settings/privacy/`,
+            {
+                auto_add_reading: autoAddReading,
+                library_visibility: libraryVisibility
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+        .then(response => {
+            console.log('Успешно сохранено:', response.data);
+        })
+        .catch(error => {
+            console.error('Ошибка при сохранении настроек:', error);
+            console.log('Успешно сохранено:', autoAddReading);
+        });
+    }
+}, [libraryVisibility, token]);
+
+const handleAutoAddReadingChange = (e) => {
+  const value = e.target.value === "true"; // Преобразуем строку "true" в true, а "false" в false
+  setAutoAddReading(value);
 };
+
+const handleLibraryVisibilityChange = (e) => {
+  const value = e.target.value;
+  setLibraryVisibility(value);
+};
+
 
   const handleDiscard = () => {
       axios.get(`${apiUrl}/users/api/settings/privacy/`)
@@ -3334,17 +3342,17 @@ function Privacy() {
               <ul className='privacy-setting-ul'>
                   <li className='privacy-setting-li'>
                       <label className='privacy-label'>Auto add books to<br></br>the library</label>
-                      <select className='privacy-input' value={autoAddReading ? '1' : '2'} onChange={e => setAutoAddReading(e.target.value === '1')}>
-                          <option value="1">Active (Recommended)</option>
-                          <option value="2">Off</option>
+                      <select className='privacy-input' value={autoAddReading} onChange={handleAutoAddReadingChange}>
+                          <option value="true">Active (Recommended)</option>
+                          <option value="false">Off</option>
                       </select>
                   </li>
                   <li className='privacy-setting-li'>
                       <label className='privacy-label'>Who can see your<br></br>Library</label>
-                      <select className='privacy-input' value={libraryVisibility === 'friends' ? '2' : libraryVisibility === 'everyone' ? '3' : '1'} onChange={e => setLibraryVisibility(e.target.value === '2' ? 'friends' : e.target.value === '3' ? 'everyone' : 'no_one')}>
-                          <option value="1">No One</option>
-                          <option value="2">Friends Only (Default)</option>
-                          <option value="3">Everyone</option>
+                      <select className='privacy-input' value={libraryVisibility} onChange={handleLibraryVisibilityChange}>
+                          <option value="no">No One</option>
+                          <option value="friends_only">Friends Only (Default)</option>
+                          <option value="everyone">Everyone</option>
                       </select>
                   </li>
               </ul>
@@ -4269,6 +4277,7 @@ function StudioMain() {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     setIsLoggedIn(false);
     navigate('/');
     window.location.reload();
@@ -4315,7 +4324,7 @@ function StudioMain() {
             <img className='header_avatar-img' src={profileData.profileimg} />
           </button>
           {menuOpen && (
-            <div ref={menuRef} className="menu">
+            <div ref={menuRef} className="menu_stud">
               <Link to='/profile'><button className='menu_button'>Profile</button></Link>
               <button className='menu_button' onClick={handleLogout}>Logout</button>
             </div>
@@ -4580,6 +4589,7 @@ function StudioComments() {
         <div className='studio__comments_view_2'>Date</div>
         <div className='studio__comments_view_3'>Book</div>
       </div>
+      <div className='studio__comments_container'>
       {comments.map((comment) => (
         <div className='studio__comments_content' key={comment.id}>
           <div className='studio__comments_views'>
@@ -4606,6 +4616,7 @@ function StudioComments() {
           </div>
         </div>
       ))}
+      </div>
     </div>
   );
 }
@@ -5490,7 +5501,7 @@ function MainHistory() {
           {Object.keys(bookData).map((period, index) => (
             <div key={index}>
               {bookData[period].length > 0 && (
-                <div>
+                <div className='history__container'>
                   <div className='history_day'>{period}</div>
                   {bookData[period].map((book, bookIndex) => (
                     <div key={bookIndex} className='profile__book'>
@@ -5613,40 +5624,7 @@ function StudioSetting({book_id}) {
 
 
 
-  const updateSettings = async (newSettings) => {
-    try {
-      const response = await axios.patch(`${apiUrl}/api/studio/books/${book_id}/settings/`, newSettings, {
-        headers: {
-          'Authorization': `Bearer ${token}` 
-        }
-      });
-      setSettings(response.data);
-    } catch (error) {
-      console.error('Ошибка при обновлении настроек:', error);
-    }
-  };
 
-
-  const addInput = () => {
-    setInputs([...inputs, { value: '', id: nextId }]); 
-    setNextId(nextId + 1); 
-  };
-
-
-  const handleInputChange = (id, value) => {
-    const newInputs = inputs.map((input) => {
-      if (input.id === id) {
-        return { ...input, value }; 
-      }
-      return input;
-    });
-    setInputs(newInputs);
-  };
-
-
-  const removeInput = (id) => {
-    setInputs(inputs.filter((input) => input.id !== id)); 
-  };
 
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
