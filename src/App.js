@@ -650,7 +650,7 @@ const Sidebar = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          await axios.get('http://127.0.0.1:8000/users/api/token-check/', {
+          await axios.get(`${apiUrl}/users/api/token-check/`, {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -2689,8 +2689,8 @@ function Login() {
 
           </span>
         </Link>
-        <span className="google">    <div className="google_button">        <a className="google-button" href="http://127.0.0.1:8000/users/api/accounts/google/login/">            <img className="google_icon" src={Google} alt="Google" />            Sign in via Google
-        </a>    </div></span><span className="facebook">    <div className="face_button">        <a className="face-button" href="http://127.0.0.1:8000/users/api/accounts/facebook/login/">            <img className="face_icon" src={Face} alt="Facebook" />            Sign in via Facebook
+        <span className="google">    <div className="google_button">        <a className="google-button" href="https://wormates.com/users/api/accounts/google/login/">            <img className="google_icon" src={Google} alt="Google" />            Sign in via Google
+        </a>    </div></span><span className="facebook">    <div className="face_button">        <a className="face-button" href="https://wormates.com/users/api/accounts/facebook/login/">            <img className="face_icon" src={Face} alt="Facebook" />            Sign in via Facebook
         </a>    </div></span>
         <hr className="login_hr" />
         <form className="log-form">
@@ -6266,7 +6266,7 @@ function NewsBar() {
           throw new Error('Access token not found');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/users/api/settings/notifications/news/', {
+        const response = await axios.get(`${apiUrl}/users/api/settings/notifications/news/`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -6353,7 +6353,7 @@ function NewsBar() {
         throw new Error('Access token not found');
       }
 
-      await axios.patch('http://127.0.0.1:8000/users/api/settings/notifications/news/', settings, {
+      await axios.patch(`${apiUrl}/users/api/settings/notifications/news/`, settings, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
