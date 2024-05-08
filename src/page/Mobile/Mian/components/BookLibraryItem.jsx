@@ -36,7 +36,7 @@ const BookLibraryItem = ({ filterBy }) => {
     }, [filterBy, username]);
   
     return (
-      <div className={`library_item_mobile ${isWide ? 'wide' : 'narrow'}`}>
+      <div className='library_items_mobile'>
         {books.map((book) => (
           <div className='library_item_mobile' key={book.id}>
             <div className='library__item_content'>

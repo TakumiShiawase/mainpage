@@ -229,13 +229,6 @@
     display: flex;
     margin-top: 40px;
 }
-.wide {
-    width: 45%;
-  }
-  
-  .narrow {
-    width: 30%;
-  }
 .library__item_content{
     width: 100%;
 }

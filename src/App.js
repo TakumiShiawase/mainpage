@@ -88,6 +88,7 @@ function App() {
           <Route path='/history' element={<MainHistory />} />
           <Route path='/library' element={<LibraryMobile />} />
           <Route path='/book_detail/:book_id' element={<BookPageMobile />} />
+          <Route path='/myLibrary' element={<LoginLibrary />} />
         </Route>
         <Route path="/login" element={<MobileLogin />} />
         <Route path="/register" element={<MobileRegister />} />
@@ -448,6 +449,13 @@ function MobileMain(){
           <button className='header-avatar-btn' onClick={(e) => { e.preventDefault(); handleMenuOpen(); }}>
             <img className='header_avatar-img' src={profileData.profileimg} />
           </button>
+          {menuOpen && (
+            <div ref={menuRef} className="menu">
+              <Link to='/profile'><button className='menu_button'>Profile</button></Link>
+              <Link to='/profile/settings'><button className='menu_button'>Settings</button></Link>
+              <button className='menu_button' onClick={handleLogout}>Logout</button>
+            </div>
+          )}
         </div>
         </div>
         ) : (
@@ -464,11 +472,11 @@ function MobileMain(){
       <Outlet />
       </div>
       <footer className='footer_mobile'>
-          <button className='footer_button_mobile'>Home</button>
-          <button className='footer_button_mobile'>Library</button>
-          <button className='footer_button_mobile'>Books</button>
+          <Link to={'/'}><button className='footer_button_mobile'>Home</button></Link>
+          {isLoggedIn ? (<Link to={'/myLibrary'}><button className='footer_button_mobile'>Library</button></Link>):(<Link to={'/library'}><button className='footer_button_mobile'>Library</button></Link>)}
+          <Link to={'#'}><button className='footer_button_mobile'>Books</button></Link>
           {isLoggedIn && (
-                          <button className='footer_button_mobile'>History</button>
+                          <Link to={'/history'}><button className='footer_button_mobile'>History</button></Link>
 )}
       </footer>
   </div>

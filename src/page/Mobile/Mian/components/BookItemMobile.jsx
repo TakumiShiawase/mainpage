@@ -48,7 +48,7 @@ function BookItemMobile({ onScroll }) {
 
   
     return (
-      <div className='book-item_mobile' ref={bookItemRef}>
+      <div className='book-item_mobile'>
   
           {filteredBooks.map(book => (
           <div className='colum_mobile' key={book.id}>
