@@ -619,6 +619,7 @@ padding-left: 10px;
   padding-left: 20px;
 }
 
+
 .month::after {
   content: '▼'; 
   position: absolute;
@@ -1245,10 +1246,16 @@ input:-internal-autofill-selected {
   margin-left: 35px;
   margin-right: 35px;
   margin-top: 35px;
-  width: 27%;
+  width: 26%;
   min-height: 300px;
 }
-
+@media screen and (max-width: 1180px) {
+  .colum {
+    margin-left: 25px;
+    margin-right: 25px;
+    margin-top: 25px;
+  }
+}
 
 .book-info {
   display: flex;
@@ -2344,6 +2351,67 @@ p {
   text-align: justify;
 }
 
+.studio__reply_container{
+  display: flex;
+  position: relative;
+  width: 100%;
+  margin-top: 20px;
+  margin-left:116px;
+  height: 100px;
+}
+.reply__studio_input-container{
+  width: 100%;
+  background-color: #000;
+  border: solid 1px #858585;
+  color: white;
+  border-radius: 25px;
+}
+.studio__reply_container img{
+  margin-right: 20px;
+}
+.studio__reply_buttons{
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+}
+.studio__button{
+  color: #858585;
+  font-size: 16px;
+}
+.studio__button:hover{
+  color: #BD00FF;
+}
+.studio__button:active{
+  color: #858585;
+}
+.studio__reply_view{
+  color: #858585;
+  position: absolute;
+  font-size: 16px;
+  left: 100px;
+}
+.studio__replies_container{
+  border-left: 1px solid #858585;
+  margin-left: 235px;
+}
+
+.studio__reply-input{
+  height: 42px;
+  resize: 'none';
+  width: 99%;
+  background-color: #000;
+  margin-top: 20px;
+  border: none;
+  color: white;
+  outline: none;
+  -ms-overflow-style: none;
+scrollbar-width: none; 
+}
+
+.studio__reply-input::placeholder{
+  color: #2B2B2B
+}
+
 .book_reader{
   margin-top: 15px;
   height: 100%;
@@ -2353,7 +2421,7 @@ p {
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  overflow-y: auto; 
+  overflow-y: scroll; 
   -ms-overflow-style: none;
   scrollbar-width: none; 
   text-align: justify;
@@ -4433,6 +4501,10 @@ a {
   color: #BD00FF;
   font-size: 24px;
   margin-right: 40px;
+}
+.studio__reply_cont{
+  display: flex;
+  margin-top: 10px;
 }
 
 .studio__reply_label {
