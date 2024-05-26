@@ -31,6 +31,7 @@ button:active {
   width: 200px;
   margin-left: 5px;
   padding: 0;
+  margin-top: 14px;
 
 }
 .sidebar_main {
@@ -57,6 +58,7 @@ button:active {
 
 .sidebar_logo_but{
   display: flex;
+  margin-left: 20px;
 }
 
 .sidebar_following{
@@ -64,6 +66,8 @@ button:active {
   margin: 10px;
   padding-left: 10px;
 }
+
+
 
 .following_avatar{
   width: 42px;
@@ -128,7 +132,7 @@ body {
 scrollbar-width: none;    */
 .books {
   width: 100%;
-  padding-left: 50px;
+  padding-left: 10px;
   overflow-y: auto; 
 -ms-overflow-style: none;
 scrollbar-width: none;   
@@ -311,6 +315,22 @@ scrollbar-width: none;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+}
+
+.search-input_mobile{
+  padding-left: 20px;
+  width: 100%;
+  height: 25px;
+  border: none;
+  background-color: #3F3F3F;
+  border-radius: 40px;
+  color: #FFF;
+  font-family: Telex;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  margin-top: 3px;
 }
 
 
@@ -966,9 +986,21 @@ input:-internal-autofill-selected {
   padding-right: 29px;
 }
 
+.header-avatar_mobile{
+  position: relative;
+}
+
 .header_avatar-img {
   width: 42px;
   height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+.header_avatar-img_mobile{
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   overflow: hidden;
   object-fit: cover;
@@ -988,7 +1020,9 @@ input:-internal-autofill-selected {
 .navigation-tabs__ul li {
   margin-right: 32px;
 }
-
+.navigation-tabs {
+ height: 58px;
+}
 .navigation-tabs a {
   color: #fff;
   text-decoration: none;
@@ -1138,6 +1172,7 @@ input:-internal-autofill-selected {
 .header__buttons{
   display: flex;
 }
+
 .studio_link_button{
   color: white;
   font-size: 24px;
@@ -1191,6 +1226,24 @@ input:-internal-autofill-selected {
 
   width: 42px;
   height: 42px;
+}
+
+.studio_menu_button_mobile{
+  position: relative;
+  display: inline-block;
+  color: white;
+  width: 38px;
+  height: 38px;
+  border: #fff 1px solid;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.studio_menu_button_mobile img{
+
+  width: 38px;
+  height: 38px;
+
 }
 .drop_news{
   display: flex;
@@ -2296,15 +2349,27 @@ button {
 
 .chapter-menu {
   width: 100%;
-  
   overflow-y: auto;   
   overflow-x: none; 
   height: 550px;
 }
+
 .chapter-list {
   width: 100%;
   text-align: center;
   margin-top: 11px;
+}
+.chapters_reader_list_buttons{
+  color: var(--text-color);
+  width: 100%;
+  font-size: 26px;
+}
+
+.chapters_reader_list_buttons.active {
+  background-color: var(--hover); 
+  color: var(--text-color); /* Любой цвет текста для активной кнопки */
+  border-radius: 15px;
+  border: 1px solid var(--border);
 }
 
 /* width */
@@ -2436,6 +2501,7 @@ scrollbar-width: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 10px;
 }
 
 .avatar_upload{
@@ -2506,7 +2572,7 @@ scrollbar-width: none;
 .top-line {
   margin-top: 14px;
   width: 100%;
-  color: var(--hr-color)
+  border: 1px solid var(--hr-color);
 }
 .button-reader {
   flex-basis: 10%;
@@ -2687,7 +2753,7 @@ scrollbar-width: none;
 }
 
 .textstudio {
-  width: 80%;
+  width: 100%;
   height: 100%;
   overflow: hidden;
   word-break: break-all;
@@ -2696,12 +2762,29 @@ scrollbar-width: none;
 }
 .textstudio-input {
   width: 100%;
-  padding: 10px;
   border: none;
   background: transparent;
   outline: none;
   color: #fff;
+  font-size: 20px;
 }
+.chapters_studio_maps{
+  margin: 10px;
+}
+.chapters__studio_title{
+  width: 100%;
+  min-height: 42px;
+  background-color: #3F3F3F;
+  color: white;
+  font-size: 20px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
+.chapters__studio_title svg{
+  margin-left: 5px;
+}
+
 
 .studio-book {
   height: 100%;
@@ -3389,6 +3472,9 @@ scrollbar-width: none;
   width: 100%;
   border-radius: 15px;
   border: none;
+  color: white;
+  font-size: 16px;
+
 }
 .mainset_input_selector {
   display: flex;
@@ -3486,6 +3572,9 @@ input {
   background-color: #3f3f3f;
   border-radius: 15px;
   border: none;
+  resize: none;
+  color: white;
+  font-size: 20px;
 }
 
 @media screen and (max-width: 1100px) {
@@ -3498,8 +3587,6 @@ input {
   color: #888888; 
   font-size: 20px;
   padding-left: 8px;
-  position: relative;
-  top: -85px;
 }
 
 
@@ -3531,6 +3618,8 @@ input {
   background-color: #3f3f3f;
   border-radius: 15px;
   border: none;
+  color: white;
+  font-size: 20px;
 }
 
 @media screen and (max-width: 1100px) {
@@ -3543,8 +3632,6 @@ input {
   font-size: 20px;
   vertical-align: bottom;
   padding-left: 8px;
-  position: relative;
-  top: -20px;
 }
 
 
@@ -5052,4 +5139,44 @@ rect {
 
 .welcome__upload:active{
   fill:#888;
+}
+
+.bookpage__coverpage_new{
+  width: 100%;
+  height: 450px;
+  position: relative;
+  overflow: hidden;
+  object-fit: cover;
+  background-size: cover;
+  background-position: center;
+}
+
+.bookpage__menu_new{
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px; 
+  background-color: rgba(0, 0, 0, 0.5); 
+  display: flex;
+  align-items: center;
+}
+
+.bookpage__menu_new div{
+  margin-left: 10px;
+}
+.bookpage__menu_new button{
+  margin-left: 10px;
+}
+
+.chapter_item_new {
+  border: 1px solid #fff;
+  margin: 10px;
+  text-align: center;
+  background-color: #3F3F3F;
+  width: 120px;
+  height: 32px;
+  color: white;
+  font-size: 20px;
+  border-radius: 15px;
 }

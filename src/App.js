@@ -107,7 +107,7 @@ function App() {
               <Route path='/profile/description' element={<ProfileDescription />} />
               <Route path='/profile/settings' element={<ProfileSettingsNav />} />
             </Route>
-            <Route path='/book_detail/:book_id' element={<BookPage />} />
+            <Route path='/book_detail/:book_id' element={<BookPageNew />} />
             <Route path='/news' element={<News />} />
           </Route>
           <Route path="/login" element={isMobile ?<MobileLogin /> : <Login/>} />
@@ -115,7 +115,7 @@ function App() {
           <Route path='/reader/:book_id/chapter/' element={<ReaderContext />} />
           <Route path='/studio' element={<StudioContext />}>
             <Route path='/studio' element={<StudioWelcome />} />
-            <Route path='/studio/maker' element={<StudioMaker />} />
+            <Route path='/studio:book_id/chapter/:chapter_id' element={<StudioMaker />} />
             <Route path='/studio/studio-books' element={<StudioBooks />} />
             <Route path='/studio/studio-series' element={<StudioSeries />} />
             <Route path='/studio/studio-comments' element={<StudioComments />} />
@@ -426,12 +426,12 @@ function MobileMain(){
 </Link>
 )}
         <div className='header-search_mobile'>
-        <SearchInput/>
+        <SearchInputMobile/>
         </div>
         {isLoggedIn ? (
           <div className='header__buttons'>
                         
-    <div className='studio_menu_button' onClick={toggleMenu}>
+    <div className='studio_menu_button_mobile' onClick={toggleMenu}>
       <img src={Bell} alt="" />
       {isOpen && (
         <div className='dropdown_news_menu'>
@@ -445,9 +445,9 @@ function MobileMain(){
             </div>
       )}
     </div>
-          <div className='header-avatar'>
+          <div className='header-avatar_mobile'>
           <button className='header-avatar-btn' onClick={(e) => { e.preventDefault(); handleMenuOpen(); }}>
-            <img className='header_avatar-img' src={profileData.profileimg} />
+            <img className='header_avatar-img_mobile' src={profileData.profileimg} />
           </button>
           {menuOpen && (
             <div ref={menuRef} className="menu">
@@ -487,6 +487,13 @@ function SearchInput() {
   const { searchQuery, setSearchQuery } = useContext(SearchContext);
   return (
     <input type="text" placeholder="search" className="search-input" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+  );
+}
+
+function SearchInputMobile() {
+  const { searchQuery, setSearchQuery } = useContext(SearchContext);
+  return (
+    <input type="text" placeholder="search" className="search-input_mobile" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
   );
 }
 
@@ -2652,6 +2659,7 @@ const handleBannerUpload = (event) => {
       // Обновляем изображение в состоянии
       if (response.status === 200) {
         const { profile_img, banner_image } = response.data;
+        console.log(response.data)
         setProfileData(prevData => ({
           ...prevData,
           user: {
@@ -3574,8 +3582,8 @@ const handleLibraryVisibilityChange = (e) => {
                   <li className='privacy-setting-li'>
                       <label className='privacy-label'>Who can see your<br></br>Library</label>
                       <select className='privacy-input' value={libraryVisibility} onChange={handleLibraryVisibilityChange}>
-                          <option value="no">No One</option>
-                          <option value="friends_only">Friends Only (Default)</option>
+                          <option value="private">No One</option>
+                          <option value="followers">Friends Only (Default)</option>
                           <option value="everyone">Everyone</option>
                       </select>
                   </li>
@@ -3882,7 +3890,7 @@ function ReaderMain() {
   const { book_id } = useParams();
   const token = localStorage.getItem('token');
   const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
-  const [selectedChapterId, setSelectedChapterId] = useState(null); // Добавлено состояние для отслеживания выбранной главы
+  const [selectedChapterId, setSelectedChapterId] = useState(null); 
   const { padding } = usePadding();
   const { lineHeight } = useLineHeight();
   const { fontFamily } = useFont();
@@ -3927,19 +3935,24 @@ function ReaderMain() {
     loadChapters();
   }, [book_id, token]);
 
-  const handleSelectChapter = (chapter) => {
-    const chapterIndex = chapters.findIndex((c) => c.id === chapter.id);
-    setCurrentChapterIndex(chapterIndex);
-    setSelectedChapterId(chapter.id); // Обновляем выбранную главу
+  const handleChapterSelect = (chapterId) => {
+    setSelectedChapterId(chapterId);
+
+    // Найдите выбранную главу в списке глав
+    const selectedChapter = chapters.find(chapter => chapter.id === chapterId);
+    if (selectedChapter) {
+      // Прокрутите к выбранной главе
+      document.getElementById(`chapter_${selectedChapter.id}`).scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
     <main className={`main ${theme}`}>
       <div className='container'>
-        <ReaderSidebar chapters={chapters} selectedChapterId={selectedChapterId} onSelectChapter={handleSelectChapter} />
+        <ReaderSidebar book_id={book_id} onSelectChapter={handleChapterSelect}/>
         <div className='reader'>
-          {chapters.map((chapter, index) => (
-            <div key={chapter.id}>
+          {chapters.map((chapter) => (
+            <div key={chapter.id} id={`chapter_${chapter.id}`}> {/* Добавьте id для каждой главы */}
               <div className='title'>{chapter.title}</div>
               <hr className='top-line' />
               <div className='book_container'>
@@ -3958,15 +3971,36 @@ function ReaderMain() {
 
 function ReaderSidebar({ book_id, onSelectChapter }) {
   const [showComponent1, setShowComponent1] = useState(true);
+  const token = localStorage.getItem('token')
+  const [chapters, setChapters] = useState([]); // Добавьте состояние для глав
+
+
+  // Загрузите главы при монтировании компонента
+  useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/book/${book_id}/chapter_side/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setChapters(response.data);
+        console.log(response.data)
+      } catch (error) {
+        console.error('Ошибка при загрузке глав:', error);
+      }
+    };
+
+    if (token) {
+      fetchChapters();
+    }
+  }, [book_id, token]);
 
   const toggleComponent = () => {
     setShowComponent1(!showComponent1);
   };
 
-  const handleChapterSelect = (chapter) => {
 
-    onSelectChapter(chapter);
-  };
 
   return (
     <div className='sidebar'>
@@ -4005,7 +4039,7 @@ function ReaderSidebar({ book_id, onSelectChapter }) {
       </a></Link></div>
       <div className={`reader__sidebar-menu ${showComponent1 ? 'show' : 'hide'}`}>
         {/* Передаем функцию handleChapterSelect в SidebarMenu */}
-        {showComponent1 ? <SidebarMenu book_id={book_id} onSelectChapter={handleChapterSelect}/> : <SidebarMenu2 />}  
+        {showComponent1 ? <SidebarMenu onSelectChapter={onSelectChapter} chapters={chapters} /> : <SidebarMenu2 />}  
       </div> 
     </div>
   );
@@ -4019,17 +4053,28 @@ function ReaderSidebar({ book_id, onSelectChapter }) {
 </g>
 </svg> 
 
-function SidebarMenu({ chapters = [], selectedChapterId, onSelectChapter }) {
+function SidebarMenu({ onSelectChapter, chapters }) {
+  const [selectedChapterId, setSelectedChapterId] = useState(null);
+
+  const handleChapterClick = (chapterId) => {
+    setSelectedChapterId(chapterId);
+    onSelectChapter(chapterId);
+  };
+
   return (
     <ul className='reader__sidebar-menu'>
       <li className='chapter-menu'>
-        {chapters.map((chapter) => (
-          <ul className='chapter-list' key={chapter.id}>
-            <li>
-            <a href="#" onClick={() => onSelectChapter(chapter)} className={selectedChapterId === chapter.id ? "chapter selected" : "chapter"}>{chapter.title}</a>
+        <ul className='chapter-list'>
+          {chapters.map(chapter => (
+            <li key={chapter.id}>
+              <button 
+                className={`chapters_reader_list_buttons ${selectedChapterId === chapter.id ? 'active' : ''}`} 
+                onClick={() => handleChapterClick(chapter.id)}>
+                {chapter.title}
+              </button>
             </li>
-          </ul>
-        ))}
+          ))}
+        </ul>
       </li>
     </ul>
   );
@@ -4524,13 +4569,42 @@ function StudioMain() {
 }
 
 function StudioMaker() {
+  const [books, setBooks] = useState([]);
+  const { book_id, chapter_id } = useParams();
+  const [chapterTitle, setChapterTitle] = useState('');
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/book/${book_id}/chapter_side/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setBooks(response.data);
+      } catch (error) {
+        console.error('Ошибка при загрузке глав:', error);
+      }
+    };
+
+    if (token) {
+      fetchBooks();
+    }
+
+  }, [token]);
+
+
+
+
   return(
     <div className='reader'>
     <div className='title-studio'>
-      <div className='bookname-studio'>The Forgotten Goddes</div>
-      <div className='chapter-studio'>/Chapter 1</div>
+      <div className='bookname-studio'>Studio/Books/{books.length > 0 ? books[0].book_name : ''}</div>
+      <div className='chapter-studio'>/{books.title}</div>
     </div>
-    <StudioNavigation />
+    <StudioNavigation book_id={book_id}/>
 
   </div>
   )
@@ -4622,7 +4696,11 @@ function StudioBooks() {
             <div key={index} className='studio__books_titles'>
               <div className='studio__books_colum'>
 
-                <div className='studio__books_text'><a href="#">{book.name}</a></div>
+                <div className='studio__books_text'> {book.last_chapter_info && (
+          <Link to={`/studio/${book.id}/chapter/${book.last_chapter_info.id}`}>
+            {book.name}
+          </Link>
+        )}</div>
               </div>
               <div className='studio__books_colum'>
 
@@ -4947,7 +5025,7 @@ function StudioSidebarMenu({ onSelectChapter }) {
 
       <div className="sidebar">
         <ul className='sidebar-menu'>
-          <Link to={'/studio/maker'}>
+          <Link to={'/studio'}>
             <li className='pool'>
               <button
                 className={getButtonClass('home')}
@@ -5022,112 +5100,60 @@ function StudioSidebarMenu2() {
   const location = useLocation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedColor, setSelectedColor] = useState(null);
+  const [chapters, setChapters] = useState([]);
+  const { book_id } = useParams();
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+  
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      setIsAuthenticated(!!token);
+    const fetchChapters = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/book/${book_id}/chapter_side/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setChapters(response.data);
+      } catch (error) {
+        console.error('Ошибка при загрузке глав:', error);
+      }
     };
-  
 
-    checkAuth();
-  
-
-    window.addEventListener('storage', checkAuth);
-  
-
-    return () => {
-      window.removeEventListener('storage', checkAuth);
-    };
-  }, []);
-
-
-  useEffect(() => {
-    const navigation = document.getElementById('navigation');
-    if (location.hash && navigation) {
-      navigation.scrollIntoView({ behavior: 'smooth' });
+    if (token) {
+      fetchChapters();
     }
-  }, [location]);
 
-  const getButtonClass = (color) => {
-    if (color === 'home' && location.pathname === '/') {
-      return 'pool-button selected';
-    }
-    return selectedColor === color ? 'pool-button selected' : 'pool-button';
-  };
+  }, [token]);
+  const isPublished = chapters.some(chapter => chapter.published);
+
 
   return (
-
-      <div className="sidebar">
-        <ul className='sidebar-menu'>
-          <Link to={'/studio/maker'}>
-            <li className='pool'>
-              <button
-                className={getButtonClass('home')}
-                onClick={() => setSelectedColor('home')}
-              >
-                <img className='pool_icon' src={Home} alt="Home" />
-              </button>
-            </li>
-          </Link>
-
-            <Link to="/studio/studio-books">
-              <li className='pool'>
-                <button
-                  className={getButtonClass('library')}
-                  onClick={() => setSelectedColor('library')}
-                >
-                  <img className='pool_icon' src={Library} alt="Books" />
-                </button>
-              </li>
-            </Link>
-
-          <Link to={'/studio/studio-series'}>
-
-              <li className='pool'>
-                <button
-                  className={getButtonClass('history')}
-                  onClick={() => setSelectedColor('history')}
-                >
-                  <img className='pool_icon' src={History} alt="Series" />
-                </button>
-              </li>
-
-          </Link>
-          <Link to={'/studio/studio-comments'}>
-            <li className='pool'>
-              <button
-                className={getButtonClass('news')}
-                onClick={() => setSelectedColor('news')}
-              >
-                <img className='pool_icon' src={CommentIcon} alt="Comments" />
-              </button>
-            </li>
-          </Link>
-          <div className='book_button'>
-            <button
-              className={getButtonClass('books')}
-              onClick={() => setSelectedColor('books')}
-            >
-              <img className='pool_icon' src={Book} alt="Earn" />
-            </button>
-          </div>
-          <div className='book_button'>
-            <button
-              className={getButtonClass('help')}
-              onClick={() => setSelectedColor('help')}
-            >
-              <img className='pool_icon' src={Help} alt="Help" />
-            </button>
-          </div>
-        </ul>
-      </div>
+    <div className="sidebar">
+      <ul className='sidebar-menu'>
+      {chapters.map(chapter => (
+        <li className='chapters_studio_maps' key={chapter.id}>
+          <button 
+            className='chapters__studio_title'
+            // Добавьте обработчик событий onClick
+            onClick={() => navigate(`/studio/${book_id}/chapter/${chapter.id}`)}
+          >
+            {isPublished ? (<div className='eye'><svg fill="#ffffff" width="32px" height="32px" viewBox="0 0 32 32"  version="1.1" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsSerif="http://www.serif.com/" xmlnsXlink="http://www.w3.org/1999/xlink"><path d="M5.112,18.784l-2.153,2.156c-0.585,0.586 -0.585,1.536 0.001,2.121c0.586,0.585 1.536,0.585 2.121,-0.001l2.666,-2.668c1.898,0.983 4.19,1.806 6.773,2.041l0,3.567c0,0.828 0.672,1.5 1.5,1.5c0.828,-0 1.5,-0.672 1.5,-1.5l0,-3.571c2.147,-0.201 4.091,-0.806 5.774,-1.571l3.199,3.202c0.585,0.586 1.535,0.586 2.121,0.001c0.586,-0.585 0.586,-1.535 0.001,-2.121l-2.579,-2.581c2.59,-1.665 4.091,-3.369 4.091,-3.369c0.546,-0.622 0.485,-1.57 -0.137,-2.117c-0.622,-0.546 -1.57,-0.485 -2.117,0.137c0,-0 -4.814,5.49 -11.873,5.49c-7.059,0 -11.873,-5.49 -11.873,-5.49c-0.547,-0.622 -1.495,-0.683 -2.117,-0.137c-0.622,0.547 -0.683,1.495 -0.137,2.117c0,0 1.175,1.334 3.239,2.794Z"/><g id="Icon"/></svg></div>):(<div className='eye'><svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M21.335 11.4069L22.2682 11.0474L21.335 11.4069ZM21.335 12.5932L20.4018 12.2337L21.335 12.5932ZM2.66492 11.4068L1.73175 11.0474L2.66492 11.4068ZM2.66492 12.5932L1.73175 12.9526L2.66492 12.5932ZM3.5981 11.7663C4.89784 8.39171 8.17084 6 12 6V4C7.31641 4 3.31889 6.92667 1.73175 11.0474L3.5981 11.7663ZM12 6C15.8291 6 19.1021 8.39172 20.4018 11.7663L22.2682 11.0474C20.681 6.92668 16.6835 4 12 4V6ZM20.4018 12.2337C19.1021 15.6083 15.8291 18 12 18V20C16.6835 20 20.681 17.0733 22.2682 12.9526L20.4018 12.2337ZM12 18C8.17084 18 4.89784 15.6083 3.5981 12.2337L1.73175 12.9526C3.31889 17.0733 7.31641 20 12 20V18ZM20.4018 11.7663C20.4597 11.9165 20.4597 12.0835 20.4018 12.2337L22.2682 12.9526C22.5043 12.3396 22.5043 11.6604 22.2682 11.0474L20.4018 11.7663ZM1.73175 11.0474C1.49567 11.6604 1.49567 12.3396 1.73175 12.9526L3.5981 12.2337C3.54022 12.0835 3.54022 11.9165 3.5981 11.7663L1.73175 11.0474Z" fill="#ffffff"/>
+<circle cx="12" cy="12" r="3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>)}{chapter.title}
+          </button>
+        </li>
+      ))}
+      </ul>
+    </div>
   );
 }
 
 
 const StudioTextInput = () => {
   const [inputText, setInputText] = useState('');
+  const [serverText, setServerText] = useState('');
   const [alignment, setAlignment] = useState('justify');
   const [textColor, setTextColor] = useState('#000000');
   const [showAlignmentOptions, setShowAlignmentOptions] = useState(false);
@@ -5141,6 +5167,9 @@ const StudioTextInput = () => {
   const colorHistory = useRef([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [modalOpen, setModalOpen] = useState(false);
+  const token = localStorage.getItem('token')
+  const { book_id } = useParams();
+  const { chapter_id } = useParams();
 
   const handleOpen = () => {
     setModalOpen(true);
@@ -5229,11 +5258,39 @@ const StudioTextInput = () => {
     updateLocalStorage();
   };
 
-  const handleInputChange = (event) => {
-    setInputText(event.target.value);
-    updateHistory();
-    updateLocalStorage();
-  };
+  useEffect(() => {
+   
+    axios.get(`${apiUrl}/api/book/${book_id}/chapter/${chapter_id}/`, {
+        headers: {
+            Authorization: `Bearer ${token}` 
+        }
+    })
+        .then(response => {
+            setServerText(response.data.content);
+        })
+        .catch(error => {
+            console.error('Ошибка получения данных с сервера:', error);
+        });
+}, [chapter_id]); 
+
+const handleInputChange = (event) => {
+    const newText = event.target.value;
+    setInputText(newText);
+
+
+    axios.put(`${apiUrl}/api/book/${book_id}/chapter/${chapter_id}/`, { content: newText }, {
+        headers: {
+            Authorization: `Bearer ${token}` 
+        }
+    })
+        .then(response => {
+
+        })
+        .catch(error => {
+
+            console.error('Ошибка при отправке данных на сервер:', error);
+        });
+};
 
   const handleColorPickerClick = () => {
     setShowColorPicker((prevShowColorPicker) => !prevShowColorPicker);
@@ -5464,7 +5521,7 @@ const StudioTextInput = () => {
       <div className='textstudio'>
         <ContentEditable
           className='textstudio-input'
-          html={inputText}
+          html={serverText}
           onChange={handleInputChange}
           innerRef={contentEditableRef}
           style={{ textAlign: alignment, color: textColor, ...style }}
@@ -5474,7 +5531,7 @@ const StudioTextInput = () => {
   );
 };
 
-function StudioNavigation() {
+function StudioNavigation({book_id}) {
   const [activeTab, setActiveTab] = useState('tab1'); 
 
   const handleTabClick = (tabId) => {
@@ -5494,8 +5551,8 @@ function StudioNavigation() {
             </div>
                 <div className='studio__tab'>
                       {activeTab === 'tab1' && <StudioTextInput />}
-                      {activeTab === 'tab2' && <StudioSetting />}
-                      {activeTab === 'tab3' && <StudioIllustartion />}
+                      {activeTab === 'tab2' && <StudioSetting book_id={book_id}/>}
+                      {activeTab === 'tab3' && <StudioIllustartion book_id={book_id}/>}
                 </div>
         </div>
     </div>
@@ -5843,21 +5900,149 @@ function HistoryBar({ clearHistory }) {
   );
 }
 
+
+// useEffect(() => {
+//   const fetchData = async () => {
+//     try {
+//       const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`, {
+//         headers: {
+//           'Authorization': `Bearer ${token}`
+//         }
+//       });
+//       const data = response.data;
+//       setBookName(data.name);
+//       setNewName(data.name);
+//       setNewCoAuthor(data.co_author);
+//       setNewGenre(data.genre);
+//       setNewDescription(data.description);
+//       setNewBookType(data.book_type);
+//       setNewAuthorsNote(data.authors_note);
+//       setIsAdult(data.is_adult);
+//       setVisibility(data.visibility);
+//       setCommentAccess(data.comment_access);
+//       setDownloadAccess(data.download_access);
+//     } catch (error) {
+//       console.error('Ошибка при получении данных книги:', error);
+//     }
+//   };
+
+//   fetchData();
+// }, [book_id, token]);
+
+
 function StudioSetting({book_id}) {
-  const [inputs, setInputs] = useState([{ value: '', id: 0 }]); 
-  const [nextId, setNextId] = useState(1); 
   const [recordEnabled, setRecordEnabled] = useState(false);
-  const [settings, setSettings] = useState([]);
   const token = localStorage.getItem('token');
   const [bookName, setBookName] = useState(''); 
+  const [newName, setNewName] = useState('');
+  const [newCoAuthor, setNewCoAuthor] = useState('');
+  const [newGenre, setNewGenre] = useState('');
+  const [newDescription, setNewDescription] = useState('');
+  const [newBookType, setNewBookType] = useState('');
+  const [newAuthorsNote, setNewAuthorsNote] = useState('');
+  const [isAdult, setIsAdult] = useState(false);
+  const [visibility, setVisibility] = useState('public');
+  const [commentAccess, setCommentAccess] = useState('public');
+  const [downloadAccess, setDownloadAccess] = useState('public');
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = response.data;
+        setNewName(data.name);
+        setNewDescription(data.description);
+        setNewBookType(data.book_type);
+        setNewAuthorsNote(data.authors_note);
+        setVisibility(data.visibility);
+        setCommentAccess(data.comment_access);
+        setDownloadAccess(data.download_access);
+      } catch (error) {
+        console.error('Ошибка при получении данных книги:', error);
+      }
+    };
 
-  const handleBookNameChange = (event) => {
-    setBookName(event.target.value);
+    fetchData();
+  }, [book_id, token]);
+  
+
+  const handleChangeName = (e) => {
+    setNewName(e.target.value);
+  };
+
+  const handleChangeCoAuthor = (e) => {
+    setNewCoAuthor(e.target.value);
+  };
+
+  const handleChangeGenre = (e) => {
+    setNewGenre(e.target.value);
+  };
+
+  const handleChangeDescription = (e) => {
+    setNewDescription(e.target.value);
+  };
+
+  const handleChangeBookType = (e) => {
+    setNewBookType(e.target.value);
+  };
+
+  const handleChangeAuthorsNote = (e) => {
+    setNewAuthorsNote(e.target.value);
+  };
+
+  const handleClickIsAdult = () => {
+    setIsAdult(!isAdult);
+  };
+
+  const handleChangeVisibility = (e) => {
+    setVisibility(e.target.value);
+  };
+
+  const handleChangeCommentAccess = (e) => {
+    setCommentAccess(e.target.value);
+  };
+
+  const handleChangeDownloadAccess = (e) => {
+    setDownloadAccess(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const updatedData = {};
+    
+
+    if (newName !== '') updatedData.name = newName;
+    if (newCoAuthor !== '') updatedData.co_author = newCoAuthor;
+    if (newGenre !== '') updatedData.genre = newGenre;
+    if (newDescription !== '') updatedData.description = newDescription;
+    if (newBookType !== '') updatedData.book_type = newBookType;
+    if (newAuthorsNote !== '') updatedData.authors_note = newAuthorsNote;
+    if (isAdult !== '') updatedData.is_adult = isAdult;
+    updatedData.visibility = visibility;
+    updatedData.comment_access = commentAccess;
+    updatedData.download_access = downloadAccess;
+    
+    try {
+      await axios.patch(
+        `http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`,
+        updatedData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      alert('Данные книги успешно обновлены!');
+    } catch (error) {
+      console.error('Ошибка при обновлении данных книги:', error);
+    }
   };
 
 
-
-
+  
 
   const [modalOpen1, setModalOpen1] = useState(false);
   const [modalOpen2, setModalOpen2] = useState(false);
@@ -5903,6 +6088,8 @@ function StudioSetting({book_id}) {
         }
       });
     };
+
+  
   
     const modalOpen = [modalOpen1, modalOpen2, modalOpen3, modalOpen4, modalOpen5, modalOpen6, modalOpen7, modalOpen8, modalOpen9];
   
@@ -5926,8 +6113,8 @@ function StudioSetting({book_id}) {
           <div className='mainset_label_input'>
             <div className='mainset_label'>Book Name</div>
             <div className='mainset_inputsector'>
-            <input className='mainset_input' type="text" placeholder='Book Name'  value={bookName} 
-        onChange={handleBookNameChange}/>
+            <input className='mainset_input' type="text" placeholder='Book Name'              value={newName} 
+            onChange={handleChangeName}/>
             <button onClick={openModals[0]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
 </svg>{modalOpen1 && (
@@ -5946,6 +6133,8 @@ function StudioSetting({book_id}) {
             type="text"
             className='mainset_input'
             placeholder="Co-Author's URL"
+            value={newCoAuthor} 
+            onChange={handleChangeCoAuthor}
           />
             <button onClick={openModals[1]} className='mainset_info_button'><svg className='mainset_info_button' width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
@@ -5984,7 +6173,11 @@ function StudioSetting({book_id}) {
           <div className='mainset_label_input'>
             <div className='mainset_label'>Type of Book</div>
             <div className='mainset_inputsector'>
-            <select className='mainset_input_selector'>
+            <select className='mainset_input_selector'value={newBookType} onChange={handleChangeBookType}>
+            <option value="epic_novel">Epic Novel</option>
+            <option value="novel">Novel</option>
+            <option value="short_story_poem">Short Story/Poem</option>
+            <option value="collection">Short Story/Poem Collection</option>
             </select>
             <button onClick={openModals[3]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
@@ -6001,11 +6194,11 @@ function StudioSetting({book_id}) {
         </div>
         <div className='mainset_label_input'>
           <div className='mainset_label_des'>Description</div>
-          <input className='mainset_desc_input' type="text" placeholder="Book's Description"/>
+          <textarea className='mainset_desc_input' type="text" placeholder="Book's Description" value={newDescription} onChange={handleChangeDescription}/>
         </div>
         <div className='mainset_label_input'>
           <div className='mainset_label_note' >Note</div>
-          <input className='mainset_note_input' type="text" placeholder="Author's Note"/>
+          <textarea className='mainset_note_input' type="text" placeholder="Author's Note" value={newAuthorsNote} onChange={handleChangeAuthorsNote}/>
         </div>
       </div>
       <div className='restrictions_privacy'>
@@ -6016,10 +6209,10 @@ function StudioSetting({book_id}) {
         <div className='mainset_label_input'>
             <div className='mainset_label'>Who can<br />download the<br />book</div>
             <div className='rest_inputsector'>
-            <select className='rest_input_selector'>
-              <option value="Public">Public</option>
-              <option value="Unlisted">Unlisted</option>
-              <option value="Private">Private</option>
+            <select className='rest_input_selector'value={downloadAccess} onChange={handleChangeDownloadAccess}>
+              <option value="public">Public</option>
+              <option value="followers">followers</option>
+              <option value="private">Private</option>
             </select>
             <button onClick={openModals[4]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
@@ -6037,10 +6230,10 @@ Private - No one can download the book</p>
           <div className='mainset_label_input'>
             <div className='mainset_label'>Who can see<br />the book</div>
             <div className='rest_inputsector'>
-            <select className='rest_input_selector'>
-            <option value="Public">Public</option>
-              <option value="Unlisted">Unlisted</option>
-              <option value="Private">Private</option>
+            <select className='rest_input_selector' value={visibility} onChange={handleChangeVisibility}>
+            <option value="public">Public</option>
+              <option value="unlisted">Unlisted</option>
+              <option value="private">Private</option>
             </select>
             <button onClick={openModals[5]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
@@ -6060,10 +6253,10 @@ Private - No one is able to see the book on Home/Main page and book’s page.</p
         <div className='mainset_label_input'>
             <div className='mainset_label'>Who can<br />leave a<br />comment</div>
             <div className='rest_inputsector'>
-            <select className='rest_input_selector'>
-              <option value="Public">Public</option>
-              <option value="Unlisted">Unlisted</option>
-              <option value="Private">Private</option>
+            <select className='rest_input_selector' value={commentAccess} onChange={handleChangeCommentAccess}>
+              <option value="public">Public</option>
+              <option value="followers">Followers</option>
+              <option value="private">Private</option>
             </select>
             <button onClick={openModals[6]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
@@ -6083,7 +6276,7 @@ Private - No one can comment the book</p>
             <div className='rest__button'>
         <label className='rest__button-label_age'>For 18+</label>
         <div className='rest__button_container'>
-        <button className={recordEnabled ? 'notifications-button disabled' : 'notifications-button enabled'} ></button>
+        <button className={isAdult ? 'notifications-button enabled' : 'notifications-button disabled'} onClick={handleClickIsAdult} ></button>
         <button onClick={openModals[7]} className='mainset_info_button'><svg width="28px" height="28px" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
   <path fill="#3f3f3f" fill-rule="evenodd" d="M10 3a7 7 0 100 14 7 7 0 000-14zm-9 7a9 9 0 1118 0 9 9 0 01-18 0zm8-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm.01 8a1 1 0 102 0V9a1 1 0 10-2 0v5z"/>
 </svg>{modalOpen8 && (
@@ -6118,7 +6311,7 @@ Private - No one can comment the book</p>
       <div className='bookname_autor'>
       </div>
       <div className='studio_settings_save'>
-        <button className='studio_settings_save_button'>Save</button>
+        <button className='studio_settings_save_button'onClick={handleSubmit}>Save</button>
         <button><svg width="32px" height="32px" viewBox="0 0 24 24" className='studio_settings_save_restore' fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3 3V8M3 8H8M3 8L6 5.29168C7.59227 3.86656 9.69494 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.71683 21 4.13247 18.008 3.22302 14" stroke="#3f3f3f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></button>
@@ -6127,7 +6320,7 @@ Private - No one can comment the book</p>
   )
 }
 
-function StudioIllustartion () {
+function StudioIllustartion ({ book_id }) {
   const [mainImage, setMainImage] = useState(null);
   const [libraryImage, setLibraryImage] = useState(null);
   const [isRightSide, setIsRightSide] = useState(false);
@@ -6136,6 +6329,27 @@ function StudioIllustartion () {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [description, setDescription] = useState('');
   const [originalDescription, setOriginalDescription] = useState('');
+  const token = localStorage.getItem('token')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        const data = response.data;
+        setMainImage(data.cover_page);
+        setDescription(data.description);
+        setOriginalDescription(data.description);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [book_id, token]);
 
   const handleInputChange = (e) => {
     setDescription(e.target.value);
@@ -6145,8 +6359,19 @@ function StudioIllustartion () {
     setDescription(originalDescription);
   };
 
-  const handleSaveChanges = () => {
-    setOriginalDescription(description);
+  const handleSaveChanges = async () => {
+    try {
+      await axios.put(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, {
+        description: description
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setOriginalDescription(description);
+    } catch (error) {
+      console.error('Error saving description:', error);
+    }
   };
 
   const openMenu = () => {
@@ -6161,16 +6386,21 @@ function StudioIllustartion () {
     setIsRightSide(prevState => !prevState);
   };
 
-  const handleMainImageChange = (e) => {
+  const handleMainImageChange = async (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
+    const formData = new FormData();
+    formData.append('main_image', file);
 
-    reader.onloadend = () => {
-      setMainImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
+    try {
+      const response = await axios.post(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setMainImage(URL.createObjectURL(file));
+    } catch (error) {
+      console.error('Error uploading main image:', error);
     }
   };
 
@@ -6187,15 +6417,25 @@ function StudioIllustartion () {
     }
   };
 
-  const handleRemoveMainImage = () => {
-    setMainImage(null);
-    setMainKey(prevKey => prevKey + 1);
+  const handleRemoveMainImage = async () => {
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/main_image`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setMainImage(null);
+      setMainKey(prevKey => prevKey + 1);
+    } catch (error) {
+      console.error('Error removing main image:', error);
+    }
   };
 
   const handleRemoveLibraryImage = () => {
     setLibraryImage(null);
     setLibraryKey(prevKey => prevKey + 1);
   };
+
   return(
     <div className='studio__illustration'>
       <div className='ill__covers'>
@@ -6259,34 +6499,52 @@ function StudioIllustartion () {
 
 
  {isMenuOpen && (
-  <div className='ill__second'>
-      <div className='ill__covers'>
-      <div className='ill__cover'>
-        <div className='ill__views'>
-          <div className='ill__view'>Main Book Cover</div>
-          <div className='ill__info'></div>
-        </div>
-        <div className='ill__preview'>&#40;Preview Mode&#41;</div>
-<img src={libraryImage} alt="" className='ill__main_coverpage' />
-        <div className='ill__main_buttons'>
-        <div>
-    <label htmlFor="library-upload-button" className='ill__update_button'>Upload</label>
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleLibraryImageChange}
-      style={{ display: 'none' }}
-      id="library-upload-button"
-      key={libraryKey}
-    />
-  </div>
-          <button onClick={handleRemoveLibraryImage}><svg className='ill__delete_button' fill="#3f3f3f" height="28px" width="28px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" 
- viewBox="0 0 50 50" enable-background="new 0 0 50 50" xmlSpace="preserve">
+<StudioIll />
+      )}
+    </div>
+  )
+}
+
+
+function StudioIll() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const openMenu = () => {
+    setIsMenuOpen(true);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  return(
+    <div className='ill__second'>
+    <div className='ill__covers'>
+    <div className='ill__cover'>
+      <div className='ill__views'>
+        <div className='ill__view'>Main Book Cover</div>
+        <div className='ill__info'></div>
+      </div>
+      <div className='ill__preview'>&#40;Preview Mode&#41;</div>
+<img  alt="" className='ill__main_coverpage' />
+      <div className='ill__main_buttons'>
+      <div>
+  <label htmlFor="library-upload-button" className='ill__update_button'>Upload</label>
+  <input
+    type="file"
+    accept="image/*"
+
+    style={{ display: 'none' }}
+    id="library-upload-button"
+
+  />
+</div>
+        <button ><svg className='ill__delete_button' fill="#3f3f3f" height="28px" width="28px" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" 
+viewBox="0 0 50 50" enable-background="new 0 0 50 50" xmlSpace="preserve">
 <path  d="M10.289,14.211h3.102l1.444,25.439c0.029,0.529,0.468,0.943,0.998,0.943h18.933
 c0.53,0,0.969-0.415,0.998-0.944l1.421-25.438h3.104c0.553,0,1-0.448,1-1s-0.447-1-1-1h-3.741c-0.055,0-0.103,0.023-0.156,0.031
 c-0.052-0.008-0.1-0.031-0.153-0.031h-5.246V9.594c0-0.552-0.447-1-1-1h-9.409c-0.553,0-1,0.448-1,1v2.617h-5.248
 c-0.046,0-0.087,0.021-0.132,0.027c-0.046-0.007-0.087-0.027-0.135-0.027h-3.779c-0.553,0-1,0.448-1,1S9.736,14.211,10.289,14.211z
- M21.584,10.594h7.409v1.617h-7.409V10.594z M35.182,14.211L33.82,38.594H16.778l-1.384-24.383H35.182z"/>
+M21.584,10.594h7.409v1.617h-7.409V10.594z M35.182,14.211L33.82,38.594H16.778l-1.384-24.383H35.182z"/>
 <path  d="M20.337,36.719c0.02,0,0.038,0,0.058-0.001c0.552-0.031,0.973-0.504,0.941-1.055l-1.052-18.535
 c-0.031-0.552-0.517-0.967-1.055-0.942c-0.552,0.031-0.973,0.504-0.941,1.055l1.052,18.535
 C19.37,36.308,19.811,36.719,20.337,36.719z"/>
@@ -6296,44 +6554,44 @@ z"/>
 <path  d="M25.289,36.719c0.553,0,1-0.448,1-1V17.184c0-0.552-0.447-1-1-1s-1,0.448-1,1v18.535
 C24.289,36.271,24.736,36.719,25.289,36.719z"/>
 </svg></button>
-          <button className='ill__restore_button'></button>
-        </div>
+        <button className='ill__restore_button'></button>
       </div>
-      <div className='ill__cover'>
-        <div className='ill__views'>
-          <div className='ill__view'>Library Book Cover</div>
-          <div className='ill__info'></div>
-        </div>
-        <div className='ill__preview'>&#40;Preview Mode&#41;</div>
-        <div className="ill__library_coverpage">
-          <textarea className='ill__library_input' 
-          type="text" 
-          placeholder='Illustartion Description'
-          value={description}
-          onChange={handleInputChange}
-          />
     </div>
-        <div className='ill__desc_buttons'>
-          <button className='ill_library_save' onClick={handleCancelChanges}>Save</button>
-          <button onClick={handleSaveChanges}><svg width="32px" height="32px" viewBox="0 0 24 24" className='studio_settings_save_restore' fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div className='ill__cover'>
+      <div className='ill__views'>
+        <div className='ill__view'>Library Book Cover</div>
+        <div className='ill__info'></div>
+      </div>
+      <div className='ill__preview'>&#40;Preview Mode&#41;</div>
+      <div className="ill__library_coverpage">
+        <textarea className='ill__library_input' 
+        type="text" 
+        placeholder='Illustartion Description'
+
+
+        />
+  </div>
+      <div className='ill__desc_buttons'>
+        <button className='ill_library_save' >Save</button>
+        <button ><svg width="32px" height="32px" viewBox="0 0 24 24" className='studio_settings_save_restore' fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M3 3V8M3 8H8M3 8L6 5.29168C7.59227 3.86656 9.69494 3 12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.71683 21 4.13247 18.008 3.22302 14" stroke="#3f3f3f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg></button>
-        </div>
       </div>
     </div>
-          <div className='ill__second-buttons'>      {isMenuOpen && (
-            <button className='ill__plus' onClick={openMenu}></button>
-          )}
-                {isMenuOpen && (
-            <button className='ill__minus' onClick={closeMenu}></button>
-          )}
-          </div>
-    </div>
-      )}
-    </div>
+  </div>
+        <div className='ill__second-buttons'>
+          <button className='ill__plus' onClick={openMenu}></button>
+
+              {isMenuOpen && (
+          <button className='ill__minus' onClick={closeMenu}></button>
+        )}
+        </div>
+        {isMenuOpen && (
+          <StudioIll />
+        )}
+  </div>
   )
 }
-
 function StudioWelcome() {
 
   return (
@@ -6380,6 +6638,7 @@ function StudioWelcome() {
 
 function UploadButton() {
   const fileInputRef = React.useRef();
+  const token=localStorage.getItem('token')
 
   const handleClick = () => {
     fileInputRef.current.click();
@@ -6392,11 +6651,12 @@ function UploadButton() {
 
     axios.post(`${apiUrl}/api/studio/books/upload/`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Authorization': `Bearer ${token}`
       }
     })
     .then(response => {
       console.log(response.data);
+      console.log(file)
     })
     .catch(error => {
       console.error(error);
@@ -6747,7 +7007,304 @@ function AnonimHistory() {
   );
 }
 
-//mobile
+function BookPageNew() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileData, setProfileData] = useState({});
+  const [reviews, setReviews] = useState([]);
+  const [bookData, setBookData] = useState({});
+  const [infoData, setInfoData] = useState({});
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isChaptersOpen, setIsChaptersOpen] = useState(false);
+  const [isRewiewOpen, setIsRewiewOpen] = useState(false);
+  const [items, setItems] = useState([]);
+  const token = localStorage.getItem('token');
+
+  const { book_id } = useParams();
+  const [following, setFollowing] = useState(false);
+  const [author, setAuthor] = useState('');
+  const link = `https://wormates.com/book_detail/${book_id}`;
+  const handleMenuOpen = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    window.location.reload();
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const bookResponse = await axios.get(`${apiUrl}/api/book_detail/${book_id}/`);
+        
+        if (bookResponse.status === 200) {
+          setBookData(bookResponse.data);
+          const { author } = bookResponse.data;
+          setAuthor(author);
+        } else {
+
+        }
+      } catch (error) {
+        console.error('Ошибка при получении данных', error);
+      }
+    };
+
+    const infoData = async () => {
+      try {
+        const infoResponse = await axios.get(`${apiUrl}/api/book_detail/${book_id}/info`);
+        if (infoResponse.status === 200) {
+          setInfoData(infoResponse.data);
+        }else {
+
+        }
+      } catch (error) {
+
+      }
+    }
+
+    const itemData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api`); 
+        if (response.status === 200 && Array.isArray(response.data)) {
+
+          setItems(response.data);
+        }
+      } catch (error) {
+
+      }
+    };
+
+    const reviewsData = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/book_detail/${book_id}/reviews/`);
+        if (response.status === 200) {
+          setReviews(response.data)
+        }
+      }catch (error) {
+
+      }
+    };
+    const getProfile = async () => {
+      try {
+        const decodedToken = jwtDecode(token);
+        const username = decodedToken.username
+        
+        const response = await axios.get(`${apiUrl}/users/api/${username}/`, {
+        });
+
+        if (response.status === 200) {
+          setProfileData(response.data);
+        } else {
+          // Обработка ошибки
+        }
+      } catch (error) {
+
+      }
+    };
+    getProfile();
+    fetchData();
+    infoData();
+    itemData();
+    reviewsData();
+  }, [book_id]);
+
+
+
+const followAuthor = async () => {
+  try {
+      await axios.post(`http://127.0.0.1:8000/users/api/${author}/follow/`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      // После нажатия кнопки "Follow" снова проверяем статус подписки
+      checkFollowing();
+  } catch (error) {
+      console.error("Error following author:", error);
+  }
+};
+const checkFollowing = async () => {
+  try {
+      const decodedToken = jwtDecode(token);
+      const username = decodedToken.username
+      const response = await axios.get(`http://127.0.0.1:8000/users/api/${username}/following/`, {
+          headers: { Authorization: `Bearer ${token}` }
+      });
+      const followingUsers = response.data;
+      const isFollowing = followingUsers.some(user => user.username === author);
+      setFollowing(isFollowing);
+  } catch (error) {
+      console.error("Error checking following status:", error);
+  }
+};
+useEffect(() => {
+  if (typeof token === 'string') {
+    const decodedToken = jwtDecode(token);
+    const username = decodedToken.username;
+    if (username && author) {
+        checkFollowing();
+    }
+  } else {
+    console.error('Invalid token:', token);
+  }
+}, [author, token]);
+
+const toggleChapters = () => {
+  setIsChaptersOpen(!isChaptersOpen);
+};
+const toggleRewiews = () => {
+  setIsRewiewOpen(!isRewiewOpen);
+};
+const distributeItems = (items) => {
+  const columns = [[], [], []];
+  let itemsPerColumn = 10;
+
+  if (items.length > 30) {
+    itemsPerColumn = Math.floor(items.length / 3);
+  }
+
+  items.forEach((item, index) => {
+    if (columns[0].length < itemsPerColumn) {
+      columns[0].push(item);
+    } else if (columns[1].length < itemsPerColumn) {
+      columns[1].push(item);
+    } else {
+      columns[2].push(item);
+    }
+  });
+
+  return columns;
+};
+
+const columns = distributeItems(items);
+  
+  return(
+
+      <div className="bookpage__books_mobile">
+          <div className='bookpage__coverpage_new' style={{ backgroundImage: `url(${bookData.coverpage})` }}>
+          <div class="bookpage__menu_new">
+            <div className='vol'>Vol. {bookData.volume_number}</div>
+            <div className='download_mobile'><svg  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.293,13.707a1,1,0,1,1,1.414-1.414L11,14.586V3a1,1,0,0,1,2,0V14.586l2.293-2.293a1,1,0,0,1,1.414,1.414l-4,4a1,1,0,0,1-.325.216.986.986,0,0,1-.764,0,1,1,0,0,1-.325-.216ZM22,12a1,1,0,0,0-1,1v7H3V13a1,1,0,0,0-2,0v8a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V13A1,1,0,0,0,22,12Z"/></svg></div>
+            <button className='add_button_mobile'>Add</button>
+            <div className='Read_button_mobile'>Read</div>
+            <div className='bookpage_votes_mobile'><svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#ffffff"/>
+</svg>{bookData.upvotes}</div>
+            <div className='bookpage_votes_mobile'><svg fill="#ffffff" height="20px" width="20px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" 
+ viewBox="0 0 208.666 208.666" xmlSpace="preserve">
+<g>
+<path d="M54.715,24.957c-0.544,0.357-1.162,0.598-1.806,0.696l-28.871,4.403c-2.228,0.341-3.956,2.257-3.956,4.511v79.825
+  c0,1.204,33.353,20.624,43.171,30.142c12.427,12.053,21.31,34.681,33.983,54.373c4.405,6.845,10.201,9.759,15.584,9.759
+  c10.103,0,18.831-10.273,14.493-24.104c-4.018-12.804-8.195-24.237-13.934-34.529c-4.672-8.376,1.399-18.7,10.989-18.7h48.991
+  c18.852,0,18.321-26.312,8.552-34.01c-1.676-1.32-2.182-3.682-1.175-5.563c3.519-6.572,2.86-20.571-6.054-25.363
+  c-2.15-1.156-3.165-3.74-2.108-5.941c3.784-7.878,3.233-24.126-8.71-27.307c-2.242-0.598-3.699-2.703-3.405-5.006
+  c0.909-7.13-0.509-20.86-22.856-26.447C133.112,0.573,128.281,0,123.136,0C104.047,0.001,80.683,7.903,54.715,24.957z"/>
+</g>
+</svg>{bookData.downvotes}</div>
+<button className='share_button_mobile'><svg height="22px" width="22px" fill='#ffffff' version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" 
+ viewBox="0 0 512 512"  xmlSpace="preserve">
+<g>
+<path class="st0" d="M512,230.431L283.498,44.621v94.807C60.776,141.244-21.842,307.324,4.826,467.379
+  c48.696-99.493,149.915-138.677,278.672-143.14v92.003L512,230.431z"/>
+</g>
+</svg>Share</button>
+          </div>
+          </div>
+          <div className='bookpage__name_mobile'>
+            <div className='bookpage__name_views_mobile'>{bookData.name}</div>
+            <div className='bookpage__count_price_mobile'>
+              <div className='count_bookpage'><svg width="22px" fill="#858585" height="22px" viewBox="0 0 12 12" enable-background="new 0 0 12 12" id="Слой_1" version="1.1" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+
+<g>
+
+<circle cx="6" cy="6"  r="1.5"/>
+
+<path d="M6,2C4,2,2,3,0,6c2,3,4,4,6,4s4-1,6-4C10,3,8,2,6,2z M6,8.5C4.621582,8.5,3.5,7.3789063,3.5,6   S4.621582,3.5,6,3.5S8.5,4.6210938,8.5,6S7.378418,8.5,6,8.5z" />
+
+</g>
+
+</svg> {bookData.views_count} Viewings</div>
+<div className='price__bookpage'>
+{bookData.display_price !== "Free" ? `${bookData.display_price} $` : "Free"}
+</div>
+            </div>
+          </div>
+          <div className='bookpage__author_mobile'>
+            <div className='bookpage__author_info_mobile'>
+              <img src={bookData.author_profile_img} alt="" />
+              <div className='bookpage__author_name_mobile'>{bookData.author}</div>
+              <div className='bookpage__author_fol_mobile'>{bookData.author_followers_count} Followers</div>
+            </div>
+            <div className='follow_button_mobile'>
+            {following ? (
+  <button className='fol_button_mob' onClick={followAuthor}>Following</button>
+) : (<button className='fol_button_mob' onClick={followAuthor}>+ Follow</button>)}
+            </div>
+          </div>
+          <div className='about_bookpage_mobile'>
+            <div className='genres_mobile'>
+              <div className='genre_mobile'>{bookData.genre}</div>
+              <div className='genre_mobile'>{bookData.subgenres}</div>
+            </div>
+            <div className='about_book_mobile'>
+              <div className='about_book_views_mobile'>About Book</div>
+              <div className='about_volum_mobile'>Changed: {infoData.formatted_last_modified}</div>
+              <div className='about_volum_mobile'>Total Pages: {infoData.total_pages}</div>
+            </div>
+            <div className='about_description_mobile'>{infoData.description}</div>
+          </div>
+          <div className='about_book_mobile'>
+              <div className='about_book_views_mobile'>Author's Note</div>
+            </div>
+            <div className='about_description_mobile'>{infoData.description}</div>
+            {isChaptersOpen && (
+  <div className='chapters_list_mobile'>
+  {columns.map((column, columnIndex) => (
+    <div key={columnIndex} className='chapter_items_colum_mobile'>
+      {column.map((item, itemIndex) => (
+        <div key={itemIndex} className='chapter_item_new'>
+          {item.genre} 
+        </div>
+      ))}
+    </div>
+  ))}
+</div>
+            )}
+          <div className='bookpage_menu_mobile'>Chapters <button className='bookapage_menu_button_mobile' onClick={toggleChapters}><div className={`triangle-${isChaptersOpen ? 'up' : 'down'}_mobile`}></div></button></div>
+          {isRewiewOpen && (
+            <div className='bookpage_rewiews_mobile'>
+    {reviews.map((review, index) => (
+      <div className='reviews_container_mobile' key={index}>
+        <div className='reviews__author_mobile'>
+          <div className='reviews__author_avatar_mobile'><img src={review.author_profile_img} alt="" /></div>
+          <div className='reviews__author_name_mobile'>{review.author_username}</div>
+          <div className='reviews__author_time_mobile'>{review.formatted_timestamp}</div>
+          <div className='reviews__like_mobile'><div className="heart_mobile"></div>{review.like_count}</div>
+        </div>
+        <div className='reviews_content_mobile'>
+          <div className='reviews_colum_first'>
+          <div className='reviews__title_mobile'>Reviews Comment</div>
+          <div className='reviews__text_mobile'>{review.text}</div>
+          </div>
+          <div  className='reviews_colum_second'>
+          <div className='reviews__rating_mobile'>
+          <div className='reviews__rating_title_mobile'><span>Plot</span> <RatingStars rating={review.plot_rating}/></div>
+          <div className='reviews__rating_title_mobile'><span>Characters</span> <RatingStars rating={review.characters_rating}/></div>
+          <div className='reviews__rating_title_mobile'><span>Main Character</span> <RatingStars rating={review.main_character_rating}/></div>
+          <div className='reviews__rating_title_mobile'><span>Genre Fit</span> <RatingStars rating={review.genre_fit_rating}/></div>
+        </div>
+          </div>
+        </div>
+      </div>
+    ))}
+            </div>
+          )}
+          <div className='bookpage_menu_mobile'>Reviews <button className='bookapage_menu_button_mobile'  onClick={toggleRewiews}><div className={`triangle-${isRewiewOpen ? 'up' : 'down'}_mobile`}></div></button></div>
+
+          <div className='bookpage_menu_mobile'>Comments <button className='bookapage_menu_button_mobile'><div class="triangle-down_mobile"></div></button></div>
+          <div className='bookpage_recomendations_mobile'></div>
+      </div>
+  )
+}
 
 
 

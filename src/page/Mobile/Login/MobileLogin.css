@@ -31,7 +31,7 @@
   fill: #858585;
 }
 
-.google {
+.google_mobile {
   display: flex;
   align-items: center;
   border: 1px solid white;
@@ -42,12 +42,12 @@
   margin-left: 10px;
 }
 
-.google img {
+.google_mobile img {
   width: 42px;
   height: 42px;
 }
 
-.facebook {
+.facebook_mobile {
     display: flex;
     align-items: center;
     border: 1px solid white;
@@ -193,7 +193,7 @@
     display: flex;
     width: 100%;
     flex-direction: row;
-    margin-top: 40px;
+    margin-top: 20px;
     align-items: center;
 }
 .log_hr {

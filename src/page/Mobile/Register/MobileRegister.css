@@ -33,7 +33,10 @@
     width: 30%;
     font-size: 12px;
 }
+
+
 .dob_month_mobile{
+    padding: 0;
     width: 30%;
     height: 58px;
     border: 1px solid #858585;

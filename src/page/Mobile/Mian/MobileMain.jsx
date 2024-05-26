@@ -117,11 +117,13 @@ function MobileMain(){
       getProfile();
     }, [token]);
   
-    
+ 
+    // <header  className={`header_mobile ${showHeader ? '' : 'header_hidden'}`}>
+   
     return(
       <div className='mainContainer_mobile'>
         <div className='mainWrapper_mobile'>
-        <header  className={`header_mobile ${showHeader ? '' : 'header_hidden'}`}>
+        <header  className='header_mobile'>
         {isLoggedIn && (
   <Link to='/studio'>
     <button className='studio_mobile_link_button'>+</button>
@@ -131,22 +133,8 @@ function MobileMain(){
           <SearchInput/>
           </div>
           {isLoggedIn ? (
-            <div className='header__buttons'>
+            <div className='header__buttons_mobile'>
                           
-      <div className='studio_menu_button' onClick={toggleMenu}>
-        <img src={Bell} alt="" />
-        {isOpen && (
-          <div className='dropdown_news_menu'>
-              {Array.isArray(notifications) && notifications.map((notification, index) => (
-                  <div className='drop_news' key={index}>
-  
-  <Link to={`/book_detail/${notification.sender}`}><div className='drop_news_title'>{notification.book_name}:<div className='drop_news_chapter'>{notification.chapter_title}</div></div></Link>
-                      <div className='drop_news_title'>{notification.formatted_timestamp}</div>
-                  </div>
-              ))}
-              </div>
-        )}
-      </div>
             <div className='header-avatar'>
             <button className='header-avatar-btn' onClick={(e) => { e.preventDefault(); handleMenuOpen(); }}>
               <img className='header_avatar-img' src={profileData.profileimg} />
