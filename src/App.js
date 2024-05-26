@@ -561,7 +561,7 @@ function BookPage() {
 
 const followAuthor = async () => {
   try {
-      await axios.post(`http://127.0.0.1:8000/users/api/${author}/follow/`, {}, {
+      await axios.post(`${apiUrl}/users/api/${author}/follow/`, {}, {
           headers: { Authorization: `Bearer ${token}` }
       });
       // После нажатия кнопки "Follow" снова проверяем статус подписки
@@ -574,7 +574,7 @@ const checkFollowing = async () => {
   try {
       const decodedToken = jwtDecode(token);
       const username = decodedToken.username
-      const response = await axios.get(`http://127.0.0.1:8000/users/api/${username}/following/`, {
+      const response = await axios.get(`${apiUrl}/users/api/${username}/following/`, {
           headers: { Authorization: `Bearer ${token}` }
       });
       const followingUsers = response.data;
@@ -5947,7 +5947,7 @@ function StudioSetting({book_id}) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`, {
+        const response = await axios.get(`${apiUrl}/api/studio/books/${book_id}/settings/`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -6027,7 +6027,7 @@ function StudioSetting({book_id}) {
     
     try {
       await axios.patch(
-        `http://127.0.0.1:8000/api/studio/books/${book_id}/settings/`,
+        `${apiUrl}/api/studio/books/${book_id}/settings/`,
         updatedData,
         {
           headers: {
@@ -6334,7 +6334,7 @@ function StudioIllustartion ({ book_id }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, {
+        const response = await axios.get(`${apiUrl}/api/studio/books/${book_id}/illustrations/`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -6361,7 +6361,7 @@ function StudioIllustartion ({ book_id }) {
 
   const handleSaveChanges = async () => {
     try {
-      await axios.put(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, {
+      await axios.put(`${apiUrl}/api/studio/books/${book_id}/illustrations/`, {
         description: description
       }, {
         headers: {
@@ -6392,7 +6392,7 @@ function StudioIllustartion ({ book_id }) {
     formData.append('main_image', file);
 
     try {
-      const response = await axios.post(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/`, formData, {
+      const response = await axios.post(`${apiUrl}/api/studio/books/${book_id}/illustrations/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -6419,7 +6419,7 @@ function StudioIllustartion ({ book_id }) {
 
   const handleRemoveMainImage = async () => {
     try {
-      await axios.delete(`http://127.0.0.1:8000/api/studio/books/${book_id}/illustrations/main_image`, {
+      await axios.delete(`${apiUrl}/api/studio/books/${book_id}/illustrations/main_image`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -7113,7 +7113,7 @@ function BookPageNew() {
 
 const followAuthor = async () => {
   try {
-      await axios.post(`http://127.0.0.1:8000/users/api/${author}/follow/`, {}, {
+      await axios.post(`${apiUrl}/users/api/${author}/follow/`, {}, {
           headers: { Authorization: `Bearer ${token}` }
       });
       // После нажатия кнопки "Follow" снова проверяем статус подписки
@@ -7126,7 +7126,7 @@ const checkFollowing = async () => {
   try {
       const decodedToken = jwtDecode(token);
       const username = decodedToken.username
-      const response = await axios.get(`http://127.0.0.1:8000/users/api/${username}/following/`, {
+      const response = await axios.get(`${apiUrl}/users/api/${username}/following/`, {
           headers: { Authorization: `Bearer ${token}` }
       });
       const followingUsers = response.data;
