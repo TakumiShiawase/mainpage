@@ -7356,15 +7356,23 @@ const columns = distributeItems(items);
 const DownloadButton = () => {
   useEffect(() => {
     const handleInstallClick = () => {
-      const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-      const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
-      if (isIos) {
-        // Для iOS не существует прямого способа установки PWA, поэтому здесь вы можете перенаправить пользователя в App Store
-        window.location.href = 'https://apps.apple.com/';
-      } else if (isChrome) {
-        // Для Chrome на Android вы можете использовать Web App Install Banner API для запроса установки приложения
-        const manifestUrl = '/manifest.json'; // Укажите путь к вашему файлу manifest.json
-        window.location.href = manifestUrl;
+      const isChrome = /chrome/i.test(navigator.userAgent);
+      const isAndroid = /android/i.test(navigator.userAgent);
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+      if (isChrome && isAndroid && !isStandalone) {
+        // Проверяем, поддерживается ли браузер Chrome на Android
+        const promptEvent = window.matchMedia('(display-mode: browser)').matches;
+        
+        if (promptEvent) {
+          // Отображаем баннер установки приложения
+          window.addEventListener('beforeinstallprompt', (event) => {
+            // Отменяем стандартное поведение браузера
+            event.preventDefault();
+            // Показываем баннер
+            event.prompt();
+          });
+        }
       } else {
         // Для других браузеров или платформ вы можете предложить пользователю вручную скачать ваше приложение
         alert('Для установки приложения, пожалуйста, перейдите в настройки вашего браузера.');
@@ -7382,13 +7390,13 @@ const DownloadButton = () => {
     };
   }, []);
 
-
   return (
-    <button id="downloadButton" className='app_download' >
+    <button id="downloadButton" className='app_download'>
       App
     </button>
   );
 };
+
 
 
 

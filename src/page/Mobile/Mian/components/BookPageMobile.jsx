@@ -64,10 +64,11 @@ function BookPageMobile() {
 
       const itemData = async () => {
         try {
-          const response = await axios.get(`${apiUrl}/api`); 
+          const response = await axios.get(`${apiUrl}/api/book_detail/${book_id}/content`); 
           if (response.status === 200 && Array.isArray(response.data)) {
 
             setItems(response.data);
+            console.log(response)
           }
         } catch (error) {
 
