@@ -91,8 +91,8 @@ function MobileLogin() {
             <div className='log_hr'></div>
           </div>
           <div className='log_buttons'>
-            <button className='google_mobile'><img src={Google} /></button>
-            <button className='facebook_mobile'><img src={Face} /></button>
+            <button className='google_mobile'><a href="https://wormates.com/users/api/accounts/google/login/"><img src={Google} /></a></button>
+            <button className='facebook_mobile'><a href="https://wormates.com/users/api/accounts/facebook/login/"><img src={Face} /></a></button>
           </div>
           <div className='create_accaout_container'>
             <div className='create_view'>Don't Have An Account?</div>            <Link to="/register" className="create-log_mobile">

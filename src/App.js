@@ -45,6 +45,7 @@ import BookItemMobile from './page/Mobile/Mian/components/BookItemMobile.jsx';
 import LibraryMobile from './page/Mobile/Mian/components/LibraryMobile.jsx';
 import LoginLibrary from './page/Mobile/Mian/components/LoginLibraryMobile.jsx';
 import BookPageMobile from './page/Mobile/Mian/components/BookPageMobile.jsx';
+import UpdateMobile from './page/Mobile/Mian/components/UpdateMobile.jsx';
 import './page/Mobile/Mian/MobileMain.css'
 
 
@@ -89,6 +90,7 @@ function App() {
           <Route path='/library' element={<LibraryMobile />} />
           <Route path='/book_detail/:book_id' element={<BookPageMobile />} />
           <Route path='/myLibrary' element={<LoginLibrary />} />
+          <Route path='/update' element={<UpdateMobile/>} />
         </Route>
         <Route path="/login" element={<MobileLogin />} />
         <Route path="/register" element={<MobileRegister />} />
@@ -115,7 +117,7 @@ function App() {
           <Route path='/reader/:book_id/chapter/' element={<ReaderContext />} />
           <Route path='/studio' element={<StudioContext />}>
             <Route path='/studio' element={<StudioWelcome />} />
-            <Route path='/studio:book_id/chapter/:chapter_id' element={<StudioMaker />} />
+            <Route path='/studio:book_id/chapter/:chapter_id?' element={<StudioMaker />} />
             <Route path='/studio/studio-books' element={<StudioBooks />} />
             <Route path='/studio/studio-series' element={<StudioSeries />} />
             <Route path='/studio/studio-comments' element={<StudioComments />} />
@@ -322,6 +324,13 @@ function MobileMain(){
   const [notifications, setNotifications] = useState([]);
   const token = localStorage.getItem('token') || '';
   const [showHeader, setShowHeader] = useState(true);
+  const [isClicked, setIsClicked] = useState(false);
+  const [linkPath, setLinkPath] = useState('/update');
+
+  const handleClick = () => {
+    setIsClicked(prevState => !prevState);
+    setLinkPath(prevPath => (prevPath === '/update' ? '/' : '/update'));
+  };
   
   const handleScroll = (scrollPos) => {
     if (scrollPos > 0) {
@@ -414,16 +423,17 @@ function MobileMain(){
 
     getProfile();
   }, [token]);
-
+//   <div className='test_buttons'><Link to='/studio'>
+//   <button className='studio_mobile_link_button'>+</button>
+// </Link> <DownloadButton /></div>
   
   return(
     <div className='mainContainer_mobile'>
       <div className='mainWrapper_mobile'>
       <header  className={`header_mobile ${showHeader ? '' : 'header_hidden'}`}>
       {isLoggedIn && (
-<Link to='/studio'>
-  <button className='studio_mobile_link_button'>+</button>
-</Link>
+        <DownloadButton />
+
 )}
         <div className='header-search_mobile'>
         <SearchInputMobile/>
@@ -431,20 +441,11 @@ function MobileMain(){
         {isLoggedIn ? (
           <div className='header__buttons'>
                         
-    <div className='studio_menu_button_mobile' onClick={toggleMenu}>
-      <img src={Bell} alt="" />
-      {isOpen && (
-        <div className='dropdown_news_menu'>
-            {Array.isArray(notifications) && notifications.map((notification, index) => (
-                <div className='drop_news' key={index}>
-
-<Link to={`/book_detail/${notification.sender}`}><div className='drop_news_title'>{notification.book_name}:<div className='drop_news_chapter'>{notification.chapter_title}</div></div></Link>
-                    <div className='drop_news_title'>{notification.formatted_timestamp}</div>
-                </div>
-            ))}
-            </div>
-      )}
-    </div>
+                        <Link to={linkPath}>
+      <button className='studio_menu_button_mobile' onClick={handleClick}>
+        <img src={Bell} alt="Bell Icon" />
+      </button>
+    </Link>
           <div className='header-avatar_mobile'>
           <button className='header-avatar-btn' onClick={(e) => { e.preventDefault(); handleMenuOpen(); }}>
             <img className='header_avatar-img_mobile' src={profileData.profileimg} />
@@ -2649,14 +2650,13 @@ const handleBannerUpload = (event) => {
         formData.append('banner_image', finalBanner);
       }
   
-      const response = await axios.put(`${apiUrl}/users/api/settings/user_settings/`, formData, {
+      const response = await axios.put(`${apiUrl}/users/api/settings/web_page_settings/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
       });
-  
-      // Обновляем изображение в состоянии
+
       if (response.status === 200) {
         const { profile_img, banner_image } = response.data;
         console.log(response.data)
@@ -2790,6 +2790,8 @@ const handleBannerUpload = (event) => {
     </div>
   );
 }
+
+
 
 function Books() {
   const itemsPerPage = 0; 
@@ -4696,11 +4698,15 @@ function StudioBooks() {
             <div key={index} className='studio__books_titles'>
               <div className='studio__books_colum'>
 
-                <div className='studio__books_text'> {book.last_chapter_info && (
-          <Link to={`/studio/${book.id}/chapter/${book.last_chapter_info.id}`}>
-            {book.name}
-          </Link>
-        )}</div>
+                <div className='studio__books_text'>{book.last_chapter_info ? (
+  <Link to={`/studio/${book.id}/chapter/${book.last_chapter_info.id}`}>
+    {book.name}
+  </Link>
+) : (
+  <Link to={`/studio/${book.id}/chapter/`}>
+  {book.name}
+</Link>
+)}</div>
               </div>
               <div className='studio__books_colum'>
 
@@ -6594,44 +6600,69 @@ C24.289,36.271,24.736,36.719,25.289,36.719z"/>
 }
 function StudioWelcome() {
 
+  const getToken = () => {
+    return localStorage.getItem('token');
+  };
+
+  const handleButtonClick = (book_type) => {
+    const token = getToken();
+
+    const data = {
+      book_type: book_type
+    };
+
+    axios.post('http://127.0.0.1:8000/api/studio/welcome/', data, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      console.log(response.data);
+    })
+    .catch(error => {
+      console.error('There was an error!', error);
+    });
+  };
+
   return (
     <div className='welcome__studio'>
-        <div className='welcome_main_view'>Welcome to Wormates Studio!</div>
-        <div className='welcome_view'>What would You like to create?</div>
-        <div className='welcome__buttons'>
-          <div className='welcome__first_buttons'>
-            <button className='welcome__button_block'>
-              <span className='welcome__button_title'>Epic Novel</span>
-              <span className='welcome__button_text'>Length: 100000+ words</span>
-              <span className='welcome__button_text'>Can contain many parts</span>
-            </button>
-            <button className='welcome__button_block'>
-              <span className='welcome__button_title'>Novel</span>
-              <span className='welcome__button_text'> Length: 50000 words to <br/> 100000 words</span>
-              <span className='welcome__button_text'> Can contain many parts</span>
-            </button>
-            <button className='welcome__button_block'>
-              <span className='welcome__button_title'>Short Story/Poem</span>
-              <span className='welcome__button_text'>Length: Up 50000<br/>words</span>
-              <span className='welcome__button_text'>Can contain only one part</span>
-            </button>
-          </div>
-          <div className='welcome__second_buttons'>
-            <button className='welcome__button_block'>
-              <span className='welcome__button_title'>Short Story/Poem Collection</span>
-              <span className='welcome__button_text'>Length: 100000+ words</span>
-              <span className='welcome__button_text'>Please, use only one part<br/>for one story/poem</span>
-            </button>
-            <button className='welcome__button_block'>
-              <span className='welcome__button_title'>Do not bother me!</span>
-              <span className='welcome__button_text'>Deciede later...</span>
-            </button>
-          </div>
+      <div className='welcome_main_view'>Welcome to Wormates Studio!</div>
+      <div className='welcome_view'>What would You like to create?</div>
+      <div className='welcome__buttons'>
+        <div className='welcome__first_buttons'>
+          <button className='welcome__button_block' onClick={() => handleButtonClick('epic_novel')}>
+            <span className='welcome__button_title'>Epic Novel</span>
+            <span className='welcome__button_text'>Length: 100000+ words</span>
+            <span className='welcome__button_text'>Can contain many parts</span>
+          </button>
+          <button className='welcome__button_block' onClick={() => handleButtonClick('novel')}>
+            <span className='welcome__button_title'>Novel</span>
+            <span className='welcome__button_text'>Length: 50000 words to <br/> 100000 words</span>
+            <span className='welcome__button_text'>Can contain many parts</span>
+          </button>
+          <button className='welcome__button_block' onClick={() => handleButtonClick('short_story_poem')}>
+            <span className='welcome__button_title'>Short Story/Poem</span>
+            <span className='welcome__button_text'>Length: Up 50000<br/>words</span>
+            <span className='welcome__button_text'>Can contain only one part</span>
+          </button>
         </div>
-        <div className='welcome_view'> Or</div>
-        <hr className='welcome__hr' />
-        <div className='welcome_view'> You can Upload book inthe following formats <br/>&#40;TXT,PDF,DOCX,FB2,EPUB&#41; below:</div>
-        <UploadButton/>
+        <div className='welcome__second_buttons'>
+          <button className='welcome__button_block' onClick={() => handleButtonClick('collection')}>
+            <span className='welcome__button_title'>Short Story/Poem Collection</span>
+            <span className='welcome__button_text'>Length: 100000+ words</span>
+            <span className='welcome__button_text'>Please, use only one part<br/>for one story/poem</span>
+          </button>
+          <button className='welcome__button_block' onClick={() => handleButtonClick('Do not bother me!')}>
+            <span className='welcome__button_title'>Do not bother me!</span>
+            <span className='welcome__button_text'>Decide later...</span>
+          </button>
+        </div>
+      </div>
+      <div className='welcome_view'> Or</div>
+      <hr className='welcome__hr' />
+      <div className='welcome_view'> You can Upload book in the following formats <br/>&#40;TXT, PDF, DOCX, FB2, EPUB&#41; below:</div>
+      <UploadButton/>
     </div>
   );
 }
@@ -6774,8 +6805,23 @@ function NewsBar() {
     fetchSettings();
   }, []);
 
-  const handleChange = (event) => {
-    setValue(parseInt(event.target.value));
+  const handleChange = async (event) => {
+    const newValue = parseInt(event.target.value);
+    setValue(newValue);
+    // Отправка нового значения на сервер
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Access token not found');
+      }
+      await axios.patch(`${apiUrl}/users/api/settings/notifications/news/`, { chapter_notification_threshold: newValue }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+    } catch (error) {
+      console.error(`Error sending chapter_notification_threshold: ${error}`);
+    }
   };
 
   const handleMouseDown = (event) => {
@@ -6890,8 +6936,8 @@ function NewsBar() {
       <div className="slider-container" onMouseUp={handleMouseUp} onMouseMove={handleMouseMove}>
         <input
           type="range"
-          min="0"
-          max="4"
+          min="1"
+          max="5"
           value={value}
           className="slider-input"
           onChange={handleChange}
@@ -7185,7 +7231,7 @@ const columns = distributeItems(items);
             <div className='vol'>Vol. {bookData.volume_number}</div>
             <div className='download_mobile'><svg  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.293,13.707a1,1,0,1,1,1.414-1.414L11,14.586V3a1,1,0,0,1,2,0V14.586l2.293-2.293a1,1,0,0,1,1.414,1.414l-4,4a1,1,0,0,1-.325.216.986.986,0,0,1-.764,0,1,1,0,0,1-.325-.216ZM22,12a1,1,0,0,0-1,1v7H3V13a1,1,0,0,0-2,0v8a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V13A1,1,0,0,0,22,12Z"/></svg></div>
             <button className='add_button_mobile'>Add</button>
-            <div className='Read_button_mobile'>Read</div>
+            <Link to={`/reader/${book_id}/chapter/`}><div className='Read_button_mobile'>Read</div></Link>
             <div className='bookpage_votes_mobile'><svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#ffffff"/>
 </svg>{bookData.upvotes}</div>
@@ -7305,6 +7351,44 @@ const columns = distributeItems(items);
       </div>
   )
 }
+
+
+const DownloadButton = () => {
+  useEffect(() => {
+    const handleInstallClick = () => {
+      const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+      const isChrome = /chrome/.test(window.navigator.userAgent.toLowerCase());
+      if (isIos) {
+        // Для iOS не существует прямого способа установки PWA, поэтому здесь вы можете перенаправить пользователя в App Store
+        window.location.href = 'https://apps.apple.com/';
+      } else if (isChrome) {
+        // Для Chrome на Android вы можете использовать Web App Install Banner API для запроса установки приложения
+        const manifestUrl = '/manifest.json'; // Укажите путь к вашему файлу manifest.json
+        window.location.href = manifestUrl;
+      } else {
+        // Для других браузеров или платформ вы можете предложить пользователю вручную скачать ваше приложение
+        alert('Для установки приложения, пожалуйста, перейдите в настройки вашего браузера.');
+      }
+    };
+
+    // Показываем кнопку скачивания
+    const downloadButton = document.getElementById('downloadButton');
+    downloadButton.style.display = 'block';
+    downloadButton.addEventListener('click', handleInstallClick);
+
+    // Очищаем обработчик события при размонтировании компонента
+    return () => {
+      downloadButton.removeEventListener('click', handleInstallClick);
+    };
+  }, []);
+
+
+  return (
+    <button id="downloadButton" className='app_download' >
+      App
+    </button>
+  );
+};
 
 
 

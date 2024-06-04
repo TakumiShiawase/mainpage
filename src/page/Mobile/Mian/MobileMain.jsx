@@ -13,6 +13,7 @@ import LibraryMobile from './components/LibraryMobile.jsx';
 import LoginLibrary from './components/LoginLibraryMobile.jsx';
 import BookPageMobile from './components/BookPageMobile.jsx';
 
+
 function MobileMain(){
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -153,6 +154,7 @@ function MobileMain(){
           )}
         </header>
         <Outlet />
+        
         </div>
         <footer className='footer_mobile'>
             <button className='footer_button_mobile'>Home</button>

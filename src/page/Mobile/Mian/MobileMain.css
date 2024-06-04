@@ -1,5 +1,5 @@
 .mainContainer_mobile{
-    height: 100vh;
+    mmin-height: 100vh;
     background: black;
   }
 
@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   padding-top: 2px;
+  height: 100%;
 }
 
 .header_mobile{
@@ -67,11 +68,12 @@
 }
 
 .book-item_mobile{
-    width: 100%;
     overflow-y: auto; 
     -ms-overflow-style: none;
     scrollbar-width: none;
-    margin-bottom: 100px;  
+    width: 100%;
+    height: calc(100vh- 43px);
+    margin-bottom: 60px;
 }
 
 .colum_mobile{
@@ -81,7 +83,7 @@
 .book-coverpage_mobile{
     position: relative;
     width: 100%;
-    height: 290px;
+    height: 225px;
     border-radius: 35px;
     padding: 0;
 }
@@ -97,7 +99,7 @@
 
 .share_button_mobile{
     color: #ffffff;
-    font-size: 14px;
+    font-size: 12px;
     display: flex;
     align-items: center;
   }
@@ -111,7 +113,7 @@
     display: flex;
     align-items: center;
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
 }
 .bookpage_votes_mobile svg {
     margin-right: 5px;
@@ -179,19 +181,19 @@
     position: fixed;
     left: 0;
     bottom: 0;
-    width: 100%;
+    width: 92%;
     height: 60px;
     background-color: black;
     display: flex;
     justify-content: space-between;
     transition: transform 1;
     z-index: 1;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .footer_button_mobile{
     color: white;
-    margin-left: 40px;
-    margin-right: 40px;
 }
 .history__mobile_book{
     width: 45%;
@@ -243,10 +245,6 @@
     border-radius: 50%;
     margin-right: 20px;
     margin-left: 20px;
-}
-.studio_menu_button_mobile img{
-    width: 32px;
-    height: 32px;
 }
 
 
@@ -326,7 +324,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 40px; 
+    height: 30px; 
     background-color: rgba(0, 0, 0, 0.5); 
     display: flex;
     align-items: center;
@@ -335,34 +333,34 @@
 
 .vol{
     color: white;
-    margin-left: 20px;
-    font-size: 24px;
+    margin-left: 15px;
+    font-size: 18px;
 }
 
 .download_mobile svg{
-    width: 22px;
-    height: 22px;
+    width: 15px;
+    height: 15px;
     fill: white;
   }
 
 .add_button_mobile{
-    width: 60px;
-    height: 32px;
+    width: 43px;
+    height: 24px;
     background: black;
     color: white;
     border: 1px solid white;
     border-radius: 10px;
-    font-size: 20px;
+    font-size: 14px;
 }
 
 .Read_button_mobile{
-    width: 64px;
-    height: 30px;
+    width: 51px;
+    height: 24px;
     background: #290038;
     color: white;
     border: 1px solid white;
     border-radius: 10px;
-    font-size: 20px;
+    font-size: 14px;
     text-align: center;
     display: flex;
     justify-content: center;
@@ -652,4 +650,99 @@
     display: flex;
     justify-content: space-between;
     width: 50%;
+}
+
+.news_mobile_views{
+    display: flex;
+    justify-content: center;
+    border-bottom: 1px white solid;
+}
+
+.views_update{
+    font-size: 18px;
+    color: #fff;
+    margin-right: 70px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    
+}
+.views_dev{
+    font-size: 18px;
+    color: #fff;
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+
+
+.news_mobile_container{
+    background-color:#101010;
+    min-height: 80vh;
+    width: 100%;
+    padding-top: 15px;
+}
+
+.news_mobile_content{
+    background-color: #000;
+    margin-left: 25px;
+    margin-right: 25px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 10px;
+    border-bottom: white 1px solid;
+    margin-bottom: 10px;
+}
+
+.news_mobile_userimg{
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.news_mobile_authorname{
+    color: #B8B8B8;
+    font-size: 6px;
+}
+
+.news_mobile_text{
+font-family: Montserrat;
+font-size: 8px;
+font-weight: 400;
+line-height: 9.75px;
+color: white;
+margin-bottom: 5px;
+}
+
+.news_author_cont{
+    display: flex;
+}
+
+
+.news_mobile_chapter{
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 9.75px;
+    color:  #BD00FF;
+}
+
+.news_mobile_author{
+    margin-left: 8px;
+    margin-right: 25px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.news_mobile_con{
+    margin-top: 2px;
+}
+
+.news_mobile_time{
+    color: white;
+
+font-size: 8px;
+font-weight: 400;
+line-height: 9.75px;
+margin-top: 2px;
+margin-right: 2px;
+
 }
