@@ -7354,46 +7354,56 @@ const columns = distributeItems(items);
 
 
 const DownloadButton = () => {
-  useEffect(() => {
-    const handleInstallClick = () => {
-      const isChrome = /chrome/i.test(navigator.userAgent);
-      const isAndroid = /android/i.test(navigator.userAgent);
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstallable, setIsInstallable] = useState(false);
 
-      if (isChrome && isAndroid && !isStandalone) {
-        // Проверяем, поддерживается ли браузер Chrome на Android
-        const promptEvent = window.matchMedia('(display-mode: browser)').matches;
-        
-        if (promptEvent) {
-          // Отображаем баннер установки приложения
-          window.addEventListener('beforeinstallprompt', (event) => {
-            // Отменяем стандартное поведение браузера
-            event.preventDefault();
-            // Показываем баннер
-            event.prompt();
-          });
-        }
-      } else {
-        // Для других браузеров или платформ вы можете предложить пользователю вручную скачать ваше приложение
-        alert('Для установки приложения, пожалуйста, перейдите в настройки вашего браузера.');
-      }
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstallable(true);
     };
 
-    // Показываем кнопку скачивания
-    const downloadButton = document.getElementById('downloadButton');
-    downloadButton.style.display = 'block';
-    downloadButton.addEventListener('click', handleInstallClick);
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Очищаем обработчик события при размонтировании компонента
     return () => {
-      downloadButton.removeEventListener('click', handleInstallClick);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the A2HS prompt');
+      } else {
+        console.log('User dismissed the A2HS prompt');
+      }
+      setDeferredPrompt(null);
+      setIsInstallable(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleAppInstalled = () => {
+      console.log('PWA was installed');
+      setIsInstallable(false);
+    };
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => {
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
 
   return (
-    <button id="downloadButton" className='app_download'>
-      App
-    </button>
+    <>
+      {isInstallable && (
+        <button  className='app_download' onClick={handleInstallClick}>App</button>
+      )}
+    </>
   );
 };
 
