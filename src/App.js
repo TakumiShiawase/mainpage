@@ -2993,10 +2993,6 @@ function Books() {
   const allItems = [
     <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
     <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
-    <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
-    <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
-    <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
-    <div className='book_button'><a className='pool-button'><img className='pool_icon' src={Book}></img>4elovek Pidor</a></div>,
   ];
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -6965,7 +6961,7 @@ function StudioWelcome() {
       book_type: book_type
     };
 
-    axios.post('http://127.0.0.1:8000/api/studio/welcome/', data, {
+    axios.post(`${apiUrl}/api/studio/welcome/ `, data, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json'
