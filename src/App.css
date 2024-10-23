@@ -1123,7 +1123,9 @@ input:-internal-autofill-selected {
   margin: 0;
 }
 
-
+.mdy-input{
+  display: flex;
+}
 
 .change-input {
   width: 414px;
@@ -1132,6 +1134,33 @@ input:-internal-autofill-selected {
   background: #3F3F3F;
   color: #858585;
 }
+.change-month-input {
+  width: 118px;
+  height: 27px;
+  border-radius: 20px;
+  margin-right: 49px;
+  background: #3F3F3F;
+  color: #858585;
+  text-align: center;
+}
+.change-date-input {
+  width: 92px;
+  height: 27px;
+  border-radius: 20px;
+  margin-right:  49px;
+  background: #3F3F3F;
+  color: #858585;
+  text-align: center;
+}
+.change-year-input {
+  width: 112px;
+  height: 27px;
+  border-radius: 20px;
+  background: #3F3F3F;
+  color: #858585;
+  text-align: center;
+}
+
 
 .change {
   width: 60%;
