@@ -2457,26 +2457,30 @@ function ProfileSettingsNav() {
   );
 }
 
-// function ProfileSettings() {
-//   const [profileData, setProfileData] = useState({
-//     user: {
-//       first_name: '',
-//       last_name: '',
-//       at_username: '',
-//       profile_img: '', 
-//     }
-//   });
-//   const [profileChangeData, setProfileChangeData] = useState({
-//     first_name: '',
-//     last_name: '',
-//     username: '',
-//     profile_img: '', 
-//   });
-//   const token = localStorage.getItem('token');
 
+
+// function ProfileSettings() {
+//   const token = localStorage.getItem('token');
+//   const [profileData, setProfileData] = useState([]);
 //   const [firstName, setFirstName] = useState('');
 //   const [lastName, setLastName] = useState('');
-//   const [username, setAtUsername] = useState('');
+//   const [bannerImage, setBannerImage] = useState('');
+//   const [avatarImage, setAvatarImage] = useState('');
+//   const [bannerImageSave, setBannerImageSave] = useState('');
+//   const [avatarImageSave, setAvatarImageSave] = useState('');
+//   const [yearOfBirth, setYearOfBirth] = useState('');
+//   const [dayOfBirth, setDayOfBirth] = useState('');
+//   const [monthOfBirth, setMonthOfBirth] = useState('');
+//   const [dobOption, setDobOption] = useState('');
+//   const [gender, setGender] = useState('');
+
+
+//   const currentYear = new Date().getFullYear();
+//   const years = [];
+//   for (let year = currentYear; year >= 1950; year--) {
+//     years.push(year);
+//   }
+
 
 //   useEffect(() => {
 //     const getProfile = async () => {
@@ -2491,8 +2495,12 @@ function ProfileSettingsNav() {
 //         });
 
 //         if (response.status === 200) {
+//           console.log('Данные профиля:', response.data);
 //           setProfileData(response.data);
-//           setProfileChangeData(response.data.user);
+//           setFirstName(response.data.user.first_name); 
+//           setLastName(response.data.user.last_name); 
+//           setBannerImage(response.data.banner_image);
+//           setAvatarImage(response.data.profileimg);
 //         } else {
 //           // Обработка ошибки
 //         }
@@ -2503,141 +2511,98 @@ function ProfileSettingsNav() {
 
 //     getProfile();
 //   }, [token]);
-
 //   useEffect(() => {
-//     setFirstName(profileData.user.first_name);
-//     setLastName(profileData.user.last_name);
-//     setAtUsername(profileData.user.at_username);
-//   }, [profileData]);
-
-//   const handleFirstNameChange = (e) => {
-//     const value = e.target.value;
-//     setFirstName(value);
-//     setProfileChangeData((prevData) => ({
-//       ...prevData,
-//       first_name: value !== profileData.user.first_name ? value : profileData.user.first_name,
-//     }));
-//   };
-  
-//   const handleLastNameChange = (e) => {
-//     const value = e.target.value;
-//     setLastName(value);
-//     setProfileChangeData((prevData) => ({
-//       ...prevData,
-//       last_name: value !== profileData.user.last_name ? value : profileData.user.last_name,
-//     }));
-//   };
-  
-//   const handleAtUsernameChange = (e) => {
-//     const value = e.target.value;
-//     setAtUsername(value);
-//     setProfileChangeData((prevData) => ({
-//       ...prevData,
-//       username: value !== profileData.user.at_username ? value : profileData.user.at_username,
-//     }));
-//   };
-//   const handleDobVisibilityChange = (e) => {
-//     const visibilityOption = parseInt(e.target.value);
-//     setProfileData((prevData) => ({
-//       ...prevData,
-//       display_dob_option: visibilityOption,
-//     }));
-//   };
-  
-
-//   const handleGenderChange = (e) => {
-//     const genderOption = e.target.value;
-//     setProfileData((prevData) => ({
-//       ...prevData,
-//       gender: genderOption,
-//     }));
-//   };
-
-//   const [tempImage, setTempImage] = useState(null);
-//   const [finalImage, setFinalImage] = useState(null);
-//   const [tempBanner, setTempBanner] = useState(null);
-// const [finalBanner, setFinalBanner] = useState(null);
-
-// const handleBannerUpload = (event) => {
-//   const file = event.target.files[0];
-//   const reader = new FileReader();
-  
-//   reader.onload = () => {
-//     const bannerDataUrl = reader.result;
-//     setFinalBanner(bannerDataUrl); // Устанавливаем изображение для предпросмотра
-//     setTempBanner(file); // Устанавливаем временное изображение для сохранения
-//   };
-
-//   if (file) {
-//     reader.readAsDataURL(file);
-//   }
-// };
-//   const handleImageUpload = (event) => {
-//     const file = event.target.files[0];
-//     const reader = new FileReader();
-    
-//     reader.onload = () => {
-//       const imageDataUrl = reader.result;
-//       setFinalImage(imageDataUrl); // Устанавливаем изображение для предпросмотра
-//       setTempImage(file); // Устанавливаем временное изображение для сохранения
+//     const fetchProfileData = async () => {
+//       try {
+//         const response = await axios.get(`${apiUrl}/users/api/settings/web_page_settings/`,{
+//           headers: {
+//             Authorization: `Bearer ${token}`, // Добавляем токен в заголовок
+//           },
+//         });
+//         setYearOfBirth(Number(response.data.date_of_birth_year));
+//         setDayOfBirth(Number(response.data.date_of_birth_day));
+//         setMonthOfBirth(Number(response.data.date_of_birth_month));
+//         setDobOption(Number(response.data.display_dob_option));
+//         setGender(response.data.gender);
+//       } catch (error) {
+//         console.error('Ошибка при загрузке данных профиля:', error);
+//       }
 //     };
-  
+
+//     fetchProfileData();
+//   }, []);
+
+//   const handleFileChange = (event) => {
+//     const file = event.target.files[0];
 //     if (file) {
-//       reader.readAsDataURL(file);
+//       setBannerImageSave(file);
+//       const imageUrl = URL.createObjectURL(file);
+//       setBannerImage(imageUrl);
 //     }
 //   };
   
+//   const handleAvatarChange = (event) => {
+//     const file = event.target.files[0];
+//     if (file) {
+//       setAvatarImageSave(file); 
+//       const imageUrl = URL.createObjectURL(file); 
+//       setAvatarImage(imageUrl); 
+//     }
+//   };
+//   const getDaysInMonth = (month, year) => {
+//     return new Date(year, month, 0).getDate();
+//   };
+
+//   const yearOf = profileData.date_of_birth_year || new Date().getFullYear(); // Используем год из данных или текущий год
+
+
+//   const daysInMonth = getDaysInMonth(monthOfBirth, yearOf);
+
+
 //   const handleSave = async () => {
+//     const formData = new FormData();
+//     formData.append('first_name', firstName);
+//     formData.append('last_name', lastName);
+    
+
+//     if (bannerImageSave instanceof File) {
+//       formData.append('banner_image', bannerImage);
+//     }
+    
+//     if (avatarImage instanceof File) {
+//       formData.append('profileimg', avatarImage);
+//     }
+  
+//     formData.append('date_of_birth_year', yearOfBirth);
+//     formData.append('date_of_birth_day', dayOfBirth);
+//     formData.append('date_of_birth_month', monthOfBirth);
+//     formData.append('display_dob_option', dobOption);
+//     formData.append('gender', gender);
+  
 //     try {
-//       const formData = new FormData();
-//       formData.append('first_name', profileChangeData.first_name);
-//       formData.append('last_name', profileChangeData.last_name);
-//       formData.append('at_username', profileChangeData.username);
-//       formData.append('display_dob_option', profileData.display_dob_option);
-//       formData.append('gender', profileData.gender);
-  
-//       // Проверяем, изменилось ли изображение профиля
-//       if (finalImage !== null) {
-//         formData.append('profile_img', finalImage);
-//       }
-  
-//       // Проверяем, изменился ли баннер
-//       if (finalBanner !== null) {
-//         formData.append('banner_image', finalBanner);
-//       }
-  
 //       const response = await axios.put(`${apiUrl}/users/api/settings/web_page_settings/`, formData, {
 //         headers: {
 //           Authorization: `Bearer ${token}`,
-//           'Content-Type': 'multipart/form-data',
+//           'Content-Type': 'multipart/form-data', // Указываем, что отправляем форму с файлами
 //         },
 //       });
-
+  
 //       if (response.status === 200) {
-//         const { profile_img, banner_image } = response.data;
-//         console.log(response.data)
-//         setProfileData(prevData => ({
-//           ...prevData,
-//           user: {
-//             ...prevData.user,
-//             profile_img,
-//             banner_image
-//           }
-//         }));
+//         console.log('Данные профиля успешно обновлены:', response.data);
+//       } else {
+//         console.error('Ошибка при обновлении данных профиля');
 //       }
-      
-//       console.log('Успешно сохранено:', response.data);
 //     } catch (error) {
-//       console.error('Ошибка при сохранении профиля', error);
+//       console.error('Ошибка при отправке данных профиля:', error);
 //     }
 //   };
 //   return (
 //     <div className='profile-settings'>
 //       <div className="settings-views">Preview (This is how others see Your profile)</div>
-//       <div className='profile-banner'><img src={profileData.banner_image} alt="#" className='banner-img'/>
+//       <div className='profile-banner'><img src={bannerImage} alt="#" className='banner-img'/>
 // </div>
 //       <div className="profile-info">
-//         <div className='avatar'><img className='avatar-img' src={profileData.profileimg} alt="#" /></div>
+//         <div className='avatar'><img className='avatar-img' src={avatarImage} alt="#" /></div>
 //         <div className='user-info'>
 //           <div className='user-name'>
 //             <div className='first_name'>{firstName}</div>
@@ -2645,7 +2610,7 @@ function ProfileSettingsNav() {
 //           </div>
 //           <div className='user-colum'>
 //             <div className='user-first__colum'>
-//               <div className='user-tag'>{username}</div>
+//               <div className='user-tag'></div>
 //               <div className='user_followers__info'>
 //                 <div className='user-followings'>{profileData.following_count}Followings</div>
 //                 <div className='user-followers'>{profileData.followers_count}Followers</div>
@@ -2669,21 +2634,20 @@ function ProfileSettingsNav() {
 //           <ul className='change-ul'>
 //             <li className='change-li'>
 //               <p>Avatar</p>
-//               <form action="/upload" method='post' encType='multipart/form-data'>
+
 //                 <div className='avatar_upload'>
 //                   <label className='label_avatar'  htmlFor="avatar">Upload</label>
-//                   <input id="avatar" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleImageUpload} />
+//                   <input id="avatar" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleAvatarChange}/>
 //                 </div>
-//               </form>
 //             </li>
 //             <li className='change-li'>
 //               <p>Banner</p>
-//               <form action="/upload" method='post' encType='multipart/form-data'>
+
 //     <div className='avatar_upload'>
 //       <label className='label_avatar'  htmlFor="banner">Upload</label>
-//       <input id="banner" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleBannerUpload} />
+//       <input id="banner" type="file" accept='image/*' style={{ display: 'none' }} onChange={handleFileChange} />
 //     </div>
-//   </form>
+
 //             </li>
 //             <li className='change-li'>
 //               <label htmlFor='FirstName'>Firstname</label>
@@ -2692,7 +2656,7 @@ function ProfileSettingsNav() {
 //                 className='change-input'
 //                 id="firstName"
 //                 value={firstName}
-//                 onChange={handleFirstNameChange}
+//                 onChange={(e) => setFirstName(e.target.value)}
 //               />
 //             </li>
 //             <li className='change-li'>
@@ -2702,34 +2666,58 @@ function ProfileSettingsNav() {
 //                 className='change-input'
 //                 id="lastName"
 //                 value={lastName}
-//                 onChange={handleLastNameChange}
+//                 onChange={(e) => setLastName(e.target.value)}
 //               />
 //             </li>
         
 //             <li className='change-li'>
 //               <label className='change-label'>Date of Birth</label>
-//               <BirthSelector />
+//               <div className='mdy-input'>
+//                 <select className='change-month-input'value={monthOfBirth} onChange={(e) => setMonthOfBirth(e.target.value)}>
+//                 {Array.from({ length: 12 }, (_, index) => (
+//             <option key={index + 1} value={index + 1}>
+//               {index + 1}
+//             </option>
+//           ))}
+//                 </select>
+//                 <select className='change-date-input'value={dayOfBirth} onChange={(e) => setDayOfBirth(e.target.value)}>
+//                 {Array.from({ length: daysInMonth }, (_, index) => (
+//           <option key={index + 1} value={index + 1}>
+//             {index + 1}
+//           </option>
+//         ))}
+//                 </select>
+//                 <select className='change-year-input'         
+//                 value={yearOfBirth}
+//                 onChange={(e) => setYearOfBirth(e.target.value)}>
+//                   {years.map((year) => (
+//                               <option key={year} value={year}>
+//                                 {year}
+//                               </option>
+//                             ))}
+//                 </select>
+//               </div>
 //             </li>
 //             <li className='change-li'>
 //               <label className='change-label'>Date of Birth Visibility</label>
-//               <select className='change-input' onChange={handleDobVisibilityChange}>
-//                 <option value="1">No One</option>
-//                 <option value="2">Friends Only(Default)</option>
-//                 <option value="3">Everyone</option>
+//               <select className='change-input' value={dobOption} onChange={(e) => setDobOption(e.target.value)}>
+//                 <option value="0">No One</option>
+//                 <option value="1">Friends Only(Default)</option>
+//                 <option value="2">Everyone</option>
 //               </select>
 //             </li>
 //             <li className='change-li'>
 //               <label className='change-label'>Gender</label>
-//               <select className='change-input' onChange={handleGenderChange}>
-//                 <option value="1">Not Specified</option>
-//                 <option value="2">Male</option>
-//                 <option value="3">Female</option>
-//                 <option value="4">Other</option>
+//               <select className='change-input' value={gender} onChange={(e) => setGender(e.target.value)}>
+//                 <option value="not_specified">Not Specified</option>
+//                 <option value="male">Male</option>
+//                 <option value="female">Female</option>
+//                 <option value="other">Other</option>
 //               </select>
 //             </li>
 //           </ul>
 //           <div className="change-buttons">
-//             <button className='save-button' onClick={handleSave}>Save</button>
+//             <button className='save-button'onClick={handleSave} >Save</button>
 //             <button className='discard-button'>Discard</button>
 //           </div>
 //         </div>
@@ -2744,12 +2732,17 @@ function ProfileSettings() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [bannerImage, setBannerImage] = useState('');
+  const [bannerImageFile, setBannerImageFile] = useState(null);
   const [avatarImage, setAvatarImage] = useState('');
+  const [avatarImageFile, setAvatarImageFile] = useState(null);
   const [yearOfBirth, setYearOfBirth] = useState('');
   const [dayOfBirth, setDayOfBirth] = useState('');
   const [monthOfBirth, setMonthOfBirth] = useState('');
   const [dobOption, setDobOption] = useState('');
   const [gender, setGender] = useState('');
+  const [tempProfileImgPath, setTempProfileImgPath] = useState('');
+  const [tempBannerImgPath, setTempBannerImgPath] = useState('');
+
 
 
   const currentYear = new Date().getFullYear();
@@ -2809,21 +2802,62 @@ function ProfileSettings() {
     fetchProfileData();
   }, []);
 
+  const handleAvatarChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const imageUrl = URL.createObjectURL(file);
+      setAvatarImage(imageUrl);
+      setAvatarImageFile(file);
+
+        // Отправляем файл на сервер
+      const formData = new FormData();
+      formData.append('profileimg', file);
+
+      axios.post(`${apiUrl}/users/api/upload_temp_profile_image/`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        console.log('Временное изображение загружено:', response.data);
+        setTempProfileImgPath(response.data.temp_img_path); // Сохраняем временный путь
+      })
+      .catch(error => {
+        console.error('Ошибка при загрузке временного изображения:', error);
+      });
+    }
+  };
+
+    // Обновление функции handleFileChange для баннера
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setBannerImage(imageUrl);
+      setBannerImageFile(file);
+
+        // Отправляем файл на сервер
+      const formData = new FormData();
+      formData.append('banner_image', file);
+
+      axios.post(`${apiUrl}/users/api/upload_temp_banner_image/`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        console.log('Временное изображение баннера загружено:', response.data);
+        setTempBannerImgPath(response.data.temp_img_path); // Сохраняем временный путь
+      })
+      .catch(error => {
+        console.error('Ошибка при загрузке временного изображения баннера:', error);
+      });
     }
   };
-  
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file); 
-      setAvatarImage(imageUrl); 
-    }
-  };
+
+
   const getDaysInMonth = (month, year) => {
     return new Date(year, month, 0).getDate();
   };
@@ -2840,13 +2874,14 @@ function ProfileSettings() {
     formData.append('last_name', lastName);
     
     // Добавляем изображения только если они есть
-    if (bannerImage instanceof File) {
-      formData.append('banner_image', bannerImage);
+    if (tempProfileImgPath) {
+      formData.append('temp_profile_img_path', tempProfileImgPath);
     }
-    
-    if (avatarImage instanceof File) {
-      formData.append('profileimg', avatarImage);
+
+    if (tempBannerImgPath) {
+      formData.append('temp_banner_img_path', tempBannerImgPath);
     }
+
   
     formData.append('date_of_birth_year', yearOfBirth);
     formData.append('date_of_birth_day', dayOfBirth);
@@ -2861,7 +2896,7 @@ function ProfileSettings() {
           'Content-Type': 'multipart/form-data', // Указываем, что отправляем форму с файлами
         },
       });
-  
+
       if (response.status === 200) {
         console.log('Данные профиля успешно обновлены:', response.data);
       } else {
@@ -3000,8 +3035,6 @@ function ProfileSettings() {
     </div>
   );
 }
-
-
 
 
 
