@@ -46,6 +46,7 @@ import LibraryMobile from './page/Mobile/Mian/components/LibraryMobile.jsx';
 import LoginLibrary from './page/Mobile/Mian/components/LoginLibraryMobile.jsx';
 import BookPageMobile from './page/Mobile/Mian/components/BookPageMobile.jsx';
 import UpdateMobile from './page/Mobile/Mian/components/UpdateMobile.jsx';
+import BookGenre from './page/Mobile/Mian/components/BooksGenre.jsx';
 import './page/Mobile/Mian/MobileMain.css'
 
 
@@ -88,6 +89,7 @@ function App() {
           <Route path='/' element={<BookItemMobile />} />
           <Route path='/history' element={<MainHistory />} />
           <Route path='/library' element={<LibraryMobile />} />
+          <Route path='/books' element={<BookGenre/>} />
           <Route path='/book_detail/:book_id' element={<BookPageMobile />} />
           <Route path='/myLibrary' element={<LoginLibrary />} />
           <Route path='/update' element={<UpdateMobile/>} />
@@ -475,7 +477,7 @@ function MobileMain(){
       <footer className='footer_mobile'>
           <Link to={'/'}><button className='footer_button_mobile'>Home</button></Link>
           {isLoggedIn ? (<Link to={'/myLibrary'}><button className='footer_button_mobile'>Library</button></Link>):(<Link to={'/library'}><button className='footer_button_mobile'>Library</button></Link>)}
-          <Link to={'#'}><button className='footer_button_mobile'>Books</button></Link>
+          <Link to={'/books'}><button className='footer_button_mobile'>Books</button></Link>
           {isLoggedIn && (
                           <Link to={'/history'}><button className='footer_button_mobile'>History</button></Link>
 )}

@@ -1,5 +1,5 @@
 .mainContainer_mobile{
-    mmin-height: 100vh;
+    min-height: 100vh;
     background: black;
   }
 
@@ -745,4 +745,139 @@ line-height: 9.75px;
 margin-top: 2px;
 margin-right: 2px;
 
+}
+
+.main_genre_link{
+    width: 80%;
+    height: 30px;
+    color: #fff;
+    background-color: #212121;
+    align-items: center;
+    text-align: center;
+    border-radius: 30px;
+    margin-top: 20px;
+    border: 1px solid #fff;
+    font-size: large;
+}
+.book_genre_page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 100px;
+}
+.title-with-lines {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #fff;
+    margin-bottom: 15px;
+    width: 100%;
+    white-space: nowrap;
+    margin-top: 26px;
+  }
+  
+.genre_colums{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.genre_colum_one{
+    width: 49%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid #fff;
+}
+.genre_colum_two{
+    width: 49%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+
+.main_genre{
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.subgenre{
+    color: #fff;
+    background-color: #212121;
+    width: 80%;
+    text-align: center;
+    align-items: center;
+    border: 1px solid #fff;
+    border-radius: 30px;
+    height: 25px;
+    margin-bottom: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.genre_setting{
+    display: flex;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.genre_set_view{
+    color: #fff;
+}
+.genre_settings{
+    width: 80%;
+    margin-top: 40px;
+}
+
+.genre-button {
+    position: relative;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 20px; 
+    transition: background-color 0.3s ease; 
+    width: 43px;
+    height: 20px;
+  }
+  
+  
+  .genre-button.enabled {
+    background: #290038;
+  }
+  
+  
+  .genre-button.disabled {
+    background: #3F3F3F;
+  }
+  
+  .genre-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border-radius: 50%;
+    transition: transform 0.3s ease, background-color 0.3s ease; 
+    transform: translateX(0);
+  }
+  
+  
+  .genre-button.enabled::before {
+    transform: translateX(100%);
+  }
+
+  .line { 
+    width: 100%;
+    margin-top: 5px; 
+    height: 1px; 
+    background-color: #fff; 
 }
