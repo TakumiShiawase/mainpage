@@ -881,3 +881,123 @@ margin-right: 2px;
     height: 1px; 
     background-color: #fff; 
 }
+
+.reader_mobile{
+    width: 100%;
+    height: 100vh;
+}
+.reader_mobile__header{
+    padding-top: 10px;
+    width: 100%;
+    height: 10%;
+    background-color: #3F3F3F;
+}
+.reader_mobile__info_stats{
+    color: #fff;
+    font-size: 16px;
+    margin-left: 20px;
+}
+
+.reader__mobile__buttons{
+    display: flex;
+    justify-content: space-between;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.reader_mobile__menu{
+    display: flex;
+}
+
+.reader_mobile__settings_menu{
+    margin-left: 20px;
+}
+.reader_mobile__chapters_list{
+    position: absolute;
+    margin-top: -10px;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 1);
+    z-index: 9999;
+}
+.reader_mobile__chapters_list_menu{
+    padding-top: 10px;
+    width: 100%;
+    height: 5%;
+    background-color: #3F3F3F;
+}
+
+.reader_mobile__chapter{
+    color: #fff;
+    border: 1px solid #fff;
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    margin-bottom: 1px;
+    text-indent: 10px;
+    font-size: 20px;
+}
+
+.reader_mobile__chapters_list_menu{
+    display: flex;
+    align-items: center;
+}
+
+.reader_mobile__chapter_book_name{
+    margin-left: 40px;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+}
+.reader_mobile__chapters_ul{
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.reader_mobile__content{
+    display: flex;
+    align-items: center;
+    margin-left: 20px;
+    margin-right: 20px;
+    flex-direction: column;
+}
+
+.reader_mobile__text{
+    color: #fff;
+}
+.reader_mobile__content_point{
+    display: flex;
+    flex-direction: column;
+    background-color: #3F3F3F;
+    color: #fff;
+    height: 5%;
+    width: 100%;
+}
+.reader_mobile__chapter_text{
+    color: #fff;
+    font-size: 25px;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+.reader_mobile__content_container {
+    overflow: hidden;
+    position: relative;
+}
+
+.reader_mobile__content {
+    transition: transform 0.3s ease;
+}
+
+.slide-left {
+    transform: translateX(-100%);
+}
+
+.slide-right {
+    transform: translateX(100%);
+}
+
+.current {
+    transform: translateX(0);
+}

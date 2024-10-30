@@ -104,6 +104,11 @@ button:active {
 body {
   background: linear-gradient(to left, #000000 85%, #290038);
 }
+@media screen and (max-width: 1040px) {
+  body {
+    background: black;
+  }
+}
 
 .main {
   height: 100vh;

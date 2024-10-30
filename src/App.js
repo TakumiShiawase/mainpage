@@ -47,6 +47,7 @@ import LoginLibrary from './page/Mobile/Mian/components/LoginLibraryMobile.jsx';
 import BookPageMobile from './page/Mobile/Mian/components/BookPageMobile.jsx';
 import UpdateMobile from './page/Mobile/Mian/components/UpdateMobile.jsx';
 import BookGenre from './page/Mobile/Mian/components/BooksGenre.jsx';
+import MobileReader from './page/Mobile/Mian/components/MobileReader.jsx';
 import './page/Mobile/Mian/MobileMain.css'
 
 
@@ -96,6 +97,7 @@ function App() {
         </Route>
         <Route path="/login" element={<MobileLogin />} />
         <Route path="/register" element={<MobileRegister />} />
+        <Route path='/reader/:book_id' element={<MobileReader />} />
       </Routes>
       ):(
         <Routes>
