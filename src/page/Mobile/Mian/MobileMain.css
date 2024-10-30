@@ -888,14 +888,18 @@ margin-right: 2px;
 }
 .reader_mobile__header{
     padding-top: 10px;
+    padding-bottom: 10px;
     width: 100%;
-    height: 10%;
+    min-height: 5%;
     background-color: #3F3F3F;
 }
 .reader_mobile__info_stats{
     color: #fff;
     font-size: 16px;
     margin-left: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .reader__mobile__buttons{
@@ -936,6 +940,9 @@ margin-right: 2px;
     margin-bottom: 1px;
     text-indent: 10px;
     font-size: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .reader_mobile__chapters_list_menu{
