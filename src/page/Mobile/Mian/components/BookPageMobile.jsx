@@ -185,7 +185,7 @@ function BookPageMobile() {
               <div className='vol'>Vol. {bookData.volume_number}</div>
               <div className='download_mobile'><svg  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7.293,13.707a1,1,0,1,1,1.414-1.414L11,14.586V3a1,1,0,0,1,2,0V14.586l2.293-2.293a1,1,0,0,1,1.414,1.414l-4,4a1,1,0,0,1-.325.216.986.986,0,0,1-.764,0,1,1,0,0,1-.325-.216ZM22,12a1,1,0,0,0-1,1v7H3V13a1,1,0,0,0-2,0v8a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V13A1,1,0,0,0,22,12Z"/></svg></div>
               <button className='add_button_mobile'>Add</button>
-              <Link to={`/reader/${book_id}`}><div className='Read_button_mobile'>Read</div></Link>
+              <Link to={`/reader/${book_id}`}><button className='read_button_mobile'>Read</button></Link>
               <div className='bookpage_votes_mobile'><svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#ffffff"/>
 </svg>{bookData.upvotes}</div>

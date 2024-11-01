@@ -79,11 +79,10 @@
 }
 
 .colum_mobile{
-    border: 1px solid #fff;
-    border-radius: 15px;
     margin-left: 10px;
     margin-right: 10px;
     margin-bottom: 10px;
+    border-bottom: 1px solid #fff;
 }
 .book_img_item_mobile img{
     border-radius: 15px;
@@ -356,20 +355,20 @@
     color: white;
     border: 1px solid white;
     border-radius: 10px;
-    font-size: 100%;
+    font-size: 12px;
 }
 
-.Read_button_mobile{
-    width: 51px;
+.read_button_mobile{
+    width: 43px;
     height: 24px;
     background: #290038;
     color: white;
     border: 1px solid white;
     border-radius: 10px;
+    font-size: 12px;
     text-align: center;
+    align-items: center;
     display: flex;
-    font-size: 100%;
-    justify-content: center;
 }
 .bookpage__name_mobile{
     padding: 10px;
