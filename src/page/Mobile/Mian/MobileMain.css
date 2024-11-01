@@ -772,6 +772,8 @@ margin-right: 2px;
     flex-direction: column;
     align-items: center;
     margin-bottom: 100px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 .title-with-lines {
     display: flex;
