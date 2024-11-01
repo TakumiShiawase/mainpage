@@ -917,6 +917,41 @@ margin-right: 2px;
     width: 100%;
     min-height: 5%;
     background-color: var(--header-back);
+    opacity: 1; 
+    animation-duration: 0.5s; 
+    animation-fill-mode: forwards; 
+}
+
+
+.reader_mobile__header.hidden {
+    animation-name: fadeOut; 
+}
+
+.reader_mobile__header.visible {
+    animation-name: fadeIn; 
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0); 
+    }
+}
+
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateY(0); 
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px); 
+    }
 }
 .reader_mobile__info_stats{
     color: var(--text-color);
