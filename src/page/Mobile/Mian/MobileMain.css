@@ -1021,6 +1021,10 @@ margin-right: 2px;
 .reader_mobile__content_container {
     overflow: hidden;
     position: relative;
+    user-select: none;
+    -webkit-user-select: none; 
+    -moz-user-select: none; 
+    -ms-user-select: none; 
 }
 
 .reader_mobile__content {
