@@ -908,7 +908,7 @@ margin-right: 2px;
 
 .reader_mobile{
     width: 100%;
-    height: 100vh;
+    min-height: 100vh;
     background: var(--content-back);
 }
 .reader_mobile__header{
