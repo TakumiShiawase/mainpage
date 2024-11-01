@@ -52,12 +52,12 @@ function BookItemMobile({ onScroll }) {
   
           {filteredBooks.map(book => (
           <div className='colum_mobile' key={book.id}>
-            <a href={`book_detail/${book.id}`}><div className='book-coverpage_mobile'><div className='image-overlay'>
-            <a className='books-authorname_mobile' href={`profile/${book.author}`}>{book.author}</a>
+            <a className='book_img_item_mobile' href={`book_detail/${book.id}`}><div className='book-coverpage_mobile'><div className='image-overlay'>
                 <a href={`profile/${book.author}`}><div className='book_author__img_mobile'><img src={book.author_profile_img} alt={book.author} /></div></a></div>
                 <img src={book.coverpage} alt={book.name} /></div></a>
             <div className='book-info_mobile'>
                 <a href={`book_detail/${book.id}`} className='books-name_mobile'>{book.name}</a>
+                <div href="#" className='books_author_name'>{book.author}</div>
                 <div className='book_mobile_counts'>
                     <div className='book_mobile_views'><svg width="22px" fill="#ffffff" height="22px" viewBox="0 0 12 12" enable-background="new 0 0 12 12" id="Слой_1" version="1.1" xmlSpace="preserve" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
 

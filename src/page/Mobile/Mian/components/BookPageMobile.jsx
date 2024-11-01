@@ -243,7 +243,9 @@ function BookPageMobile() {
             <div className='about_bookpage_mobile'>
               <div className='genres_mobile'>
                 <div className='genre_mobile'>{bookData.genre}</div>
-                <div className='genre_mobile'>{bookData.subgenres}</div>
+                {bookData.subgenres && bookData.subgenres.length > 0 && (
+                    <div className='genre_mobile'>{bookData.subgenres}</div>
+                )}
               </div>
               <div className='about_book_mobile'>
                 <div className='about_book_views_mobile'>About Book</div>
@@ -262,7 +264,7 @@ function BookPageMobile() {
       <div key={columnIndex} className='chapter_items_colum_mobile'>
         {column.map((item, itemIndex) => (
           <div key={itemIndex} className='chapter_item_mobile'>
-            {item.genre} 
+            {item.genre}
           </div>
         ))}
       </div>
