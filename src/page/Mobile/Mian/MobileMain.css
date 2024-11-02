@@ -1016,6 +1016,7 @@ margin-right: 2px;
 
 .reader_mobile__text{
     color: var(--text-color);
+    margin-top: 20px;
 }
 .reader_mobile__content_point{
     display: flex;
