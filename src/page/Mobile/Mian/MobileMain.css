@@ -1032,6 +1032,7 @@ margin-right: 2px;
     font-weight: 700;
 }
 .reader_mobile__content_container {
+    min-height: 100vh;
     overflow: hidden;
     position: relative;
     user-select: none;
