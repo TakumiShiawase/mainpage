@@ -934,15 +934,19 @@ margin-right: 2px;
     min-height: 5%;
     background-color: var(--header-back);
 
+
 }
 
 
 
 .reader_mobile__info_stats{
     color: var(--text-color);
+    display: -webkit-box;        /* Для поддержки в WebKit-браузерах */
+    -webkit-box-orient: vertical;
     font-size: 16px;
     height: 20px;
     overflow: hidden;
+    -webkit-line-clamp: 3; 
     text-overflow: ellipsis;
     -webkit-user-select: none; 
     -moz-user-select: none; 
