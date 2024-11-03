@@ -324,7 +324,11 @@
     background-position: center;
 }
 
-
+.reader_mobile_content_page{
+    border-top: 1px solid var(--border);
+    margin-top: 10px;
+    padding-top: 10px;
+}
 
 .bookpage__menu_mobile{
     position: absolute;
@@ -937,15 +941,28 @@ margin-right: 2px;
 .reader_mobile__info_stats{
     color: var(--text-color);
     font-size: 16px;
-    margin-left: 20px;
+    width: 240px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-user-select: none; 
     -moz-user-select: none; 
     -ms-user-select: none; 
+    z-index: 1;
 }
-
+.riader_mobile__next_buttons{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.riader_mobile__next_button{
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 80px;
+    height: 30px;
+    color: var(--text-color);   
+}
 .reader__mobile__buttons{
     display: flex;
     justify-content: space-between;
