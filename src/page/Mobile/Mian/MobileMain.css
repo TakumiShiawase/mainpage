@@ -941,14 +941,12 @@ margin-right: 2px;
 .reader_mobile__info_stats{
     color: var(--text-color);
     font-size: 16px;
-    max-width: 240px;
-    white-space: nowrap;
+    height: 20px;
     overflow: hidden;
     text-overflow: ellipsis;
     -webkit-user-select: none; 
     -moz-user-select: none; 
     -ms-user-select: none; 
-    z-index: 1;
 }
 .riader_mobile__next_buttons{
     display: flex;
