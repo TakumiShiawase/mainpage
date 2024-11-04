@@ -48,6 +48,7 @@ import BookPageMobile from './page/Mobile/Mian/components/BookPageMobile.jsx';
 import UpdateMobile from './page/Mobile/Mian/components/UpdateMobile.jsx';
 import BookGenre from './page/Mobile/Mian/components/BooksGenre.jsx';
 import MobileReader from './page/Mobile/Mian/components/MobileReader.jsx';
+import HistoryMobile from './page/Mobile/Mian/components/HistoryMobile.jsx';
 import './page/Mobile/Mian/MobileMain.css'
 
 
@@ -88,12 +89,12 @@ function App() {
         <Routes>
         <Route path='/' element={<MobileMain/>}>
           <Route path='/' element={<BookItemMobile />} />
-          <Route path='/history' element={<MainHistory />} />
           <Route path='/library' element={<LibraryMobile />} />
           <Route path='/books' element={<BookGenre/>} />
           <Route path='/book_detail/:book_id' element={<BookPageMobile />} />
           <Route path='/myLibrary' element={<LoginLibrary />} />
           <Route path='/update' element={<UpdateMobile/>} />
+          <Route path='/history' element={<HistoryMobile />} />
         </Route>
         <Route path="/login" element={<MobileLogin />} />
         <Route path="/register" element={<MobileRegister />} />
@@ -5998,7 +5999,7 @@ function MainHistory() {
   const [menuOpen, setMenuOpen] = useState(false);
   const token = localStorage.getItem('token');
   const { book_id } = useParams();
-  const link = `http://localhost:3000/book_detail/${book_id}`;
+  const link = `${apiUrl}/book_detail/${book_id}`;
   const handleMenuOpen = () => {
     setMenuOpen(!menuOpen);
   };

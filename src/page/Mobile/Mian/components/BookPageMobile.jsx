@@ -21,7 +21,7 @@ function BookPageMobile() {
     const { book_id } = useParams();
     const [following, setFollowing] = useState(false);
     const [author, setAuthor] = useState('');
-    const link = `https://wormates.com/book_detail/${book_id}`;
+    const link = `${apiUrl}/book_detail/${book_id}`;
     const handleMenuOpen = () => {
       setMenuOpen(!menuOpen);
     };

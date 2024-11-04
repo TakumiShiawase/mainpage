@@ -12,7 +12,7 @@ function LibraryMobile() {
     const [menuOpen, setMenuOpen] = useState(false);
     const token = localStorage.getItem('token');
     const { book_id } = useParams();
-    const link = `http://localhost:3000/book_detail/${book_id}`;
+    const link = `${apiUrl}/book_detail/${book_id}`;
     const handleMenuOpen = () => {
       setMenuOpen(!menuOpen);
     };
