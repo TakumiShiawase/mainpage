@@ -52,9 +52,11 @@
     background-color: #3F3F3F;
     color: white;
     border-radius: 25px;
+    border: none;
     font-size: 16px;
-    margin-top: 5px;
+    margin-top: 8px;
     margin-left: 100px;
+    margin-right: 30px;
 }
 
 
