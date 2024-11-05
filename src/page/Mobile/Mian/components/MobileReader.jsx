@@ -120,6 +120,7 @@ function MobileReader(){
     
         fetchChapters();
       }, [apiUrl, book_id, token]);
+      
     
 
       const handleNextChapter = () => {

@@ -46,24 +46,19 @@
 
 
 .search-input_mobile{
-    width: 100%;
-    height: 32px;
+    width: 60%;
+    height: 22px;
     text-align: center;
     background-color: #3F3F3F;
     color: white;
     border-radius: 25px;
-    font-size: 20px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-left: 100px;
 }
 
-.header-search_mobile{
-    margin-right: 40px;
-    margin-left: 10px;
-}
 
-.header-search_mobile input{
-    height: 32px;
-    text-align: center;
-}
+
 .header-signin_mobile{
     margin-right: 10px;
 }
@@ -523,7 +518,52 @@
     border-right: 8px solid transparent;
     border-bottom: 14px solid white;
   }
+.bookpage__adult_error{
+    height: 100vh;
+    display: flex; 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center; 
+    color: #fff;
+    font-size: 30px;
+    text-align: center;
+    background-color: #101010;
+}
+.bookpage__adult_error_container{
+    margin-top: -100px;
+    margin-bottom: 20px;
+}
+.bookpage__adult_text_views span {
+    color: red;
+}
+.bookpage__adult_back_button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.adult_arrow_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    margin-right: 20px;
+}
 
+.adult_arrow_container svg{
+    margin-left: 5px;
+}
+.adult_arrow {
+    stroke: #fff; /* Цвет стрелки */
+    stroke-width: 2; /* Толщина стрелки */
+    fill: none; /* Без заливки */
+}
+.no_adult_link_login{
+    color: #BD00FF;
+    text-decoration: underline;
+}
 .chapters_list_mobile{
     display: flex;
     justify-content: space-between;
@@ -541,6 +581,9 @@
     border: 1px solid #fff;
     margin: 10px;
     text-align: center;
+    overflow: hidden; /* Скрывает лишний текст */
+    text-overflow: ellipsis; /* Добавляет многоточие */
+    white-space: nowrap; /* Запрет на перенос строк */
     background-color: #3F3F3F;
     width: 90px;
     height: 22px;
