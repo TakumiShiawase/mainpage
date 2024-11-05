@@ -439,7 +439,7 @@ function MobileMain(){
       {isLoggedIn && (
         <DownloadButton />
 
-)}
+)}      <div className='header-plus_button_mobile'>+</div>
         <div className='header-search_mobile'>
         <SearchInputMobile/>
         </div>
