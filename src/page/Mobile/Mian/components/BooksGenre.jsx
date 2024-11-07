@@ -13,6 +13,7 @@ function BookGenre(){
     const [sortCriteria, setSortCriteria] = useState('views_count');
     const [currentGenreId, setCurrentGenreId] = useState(null);
     const [currentDateFilter, setCurrentDateFilter] = useState('');
+    const [selectedGenre, setSelectedGenre] = useState('');
 
     const openGenre = async (genreId, dateFilter) => {
         try {
@@ -28,19 +29,27 @@ function BookGenre(){
             console.error("Ошибка при загрузке данных жанра:", error);
         }
     };
-    const genreButton = (genreId) => {
+    const genreButton = (genreId, genreName) => {
         setCurrentGenreId(genreId);
+        setSelectedGenre(genreName);
         openGenre(genreId, currentDateFilter);
     };
 
     // Установка фильтра по дате и открытие с текущим жанром
     const genreFilterButton = (dateFilter) => {
-        setCurrentDateFilter(dateFilter);
-        if (currentGenreId) {
-            openGenre(currentGenreId, dateFilter);
-        }
+        setCurrentDateFilter(prevDateFilter => {
+            // В данном случае обновляется текущий фильтр, и только после этого вызывается openGenre
+            if (currentGenreId) {
+                openGenre(currentGenreId, dateFilter);
+            }
+            return dateFilter;
+        });
     };
-
+    useEffect(() => {
+        if (currentGenreId) {
+          openGenre(currentGenreId, currentDateFilter); // Загрузка данных при первом рендере
+        }
+      }, [currentGenreId, currentDateFilter]);
 
     const closeGenre = () => {
         setIsGenreOpen(false);
@@ -71,97 +80,109 @@ function BookGenre(){
                     <button className={firstBooks ? 'genre-button enabled' : 'genre-button disabled'} ></button>
                 </div>
             </div>
-            <button className='main_genre_link' id='15'onClick={() => genreButton(15)}>Adventure</button>
-            <button className='main_genre_link' id='10' onClick={() => genreButton(10)}>Detective</button>
-            <button className='main_genre_link' id='2' onClick={() => genreButton(2)}>Fantasy</button>
-            <button className='main_genre_link' id='55' onClick={() => genreButton(55)}>Horror</button>
-            <button className='main_genre_link' >Romance</button>
-            <button className='main_genre_link' id='8' onClick={() => genreButton(8)}>Sci - Fi</button>
+            <button className='main_genre_link' id='15' onClick={() => genreButton(15, 'Adventure')}>Adventure</button>
+            <button className='main_genre_link' id='10' onClick={() => genreButton(10, 'Detective')}>Detective</button>
+            <button className='main_genre_link' id='2' onClick={() => genreButton(2, 'Fantasy')}>Fantasy</button>
+            <button className='main_genre_link' id='55' onClick={() => genreButton(55, 'Horror')}>Horror</button>
+            <button className='main_genre_link' id='romance' onClick={() => genreButton('romance', 'Romance')}>Romance</button>
+            <button className='main_genre_link' id='8' onClick={() => genreButton(8, 'Sci - Fi')}>Sci - Fi</button>
+
             <div className="title-with-lines"><div class="line"></div>Full list of Genres<div class="line"></div></div>
             <div className='genre_colums'>
-                <div className='genre_colum_one'>
-                    <div className='main_genre' id="2" >Fantasy</div>
-                    <button className='subgenre' id="3" onClick={() => genreButton(3)}>Romantic Fantasy</button>
-                    <button className='subgenre' id="4" onClick={() => genreButton(4)}>Action Fantasy</button>
-                    <button className='subgenre' id="5" onClick={() => genreButton(5)}>Urban Fantasy</button>
-                    <button className='subgenre' id="6" onClick={() => genreButton(6)}>Dark Fantasy</button>
-                    <button className='subgenre' id="19" onClick={() => genreButton(19)}>Humorous Fantasy</button>
-                    <button className='subgenre' id="20" onClick={() => genreButton(20)}>Heroic Fantasy</button>
-                    <button className='subgenre' id="22" onClick={() => genreButton(22)}>Noble Fantasy</button>
-                    <button className='subgenre' id="21" onClick={() => genreButton(21)}>Epic Fantasy</button>
-                    <button className='subgenre' id="23" onClick={() => genreButton(23)}>Historical Fantasy</button>
-                    <button className='subgenre' id="24" onClick={() => genreButton(24)}>Magic Academy</button>
-                    <button className='subgenre' id="25" onClick={() => genreButton(25)}>Wuxia</button>
-                    <div className='main_genre' id="7" >Romance Novels</div>
-                    <button className='subgenre' id="29" onClick={() => genreButton(29)}>Romance Novel</button>
-                    <button className='subgenre' id="30" onClick={() => genreButton(30)}>Contemporary Romance Novel</button>
-                    <button className='subgenre' id="31" onClick={() => genreButton(31)}>Short Romance Novel</button>
-                    <button className='subgenre' id="43" onClick={() => genreButton(43)}>Historical Romance Novel</button>
-                    <button className='subgenre' id="44" onClick={() => genreButton(44)}>Political Romance</button>
-                    <button className='subgenre' id="10" onClick={() => genreButton(10)}>Detective</button>
-                    <button className='subgenre' id="45" onClick={() => genreButton(45)}>Historical Detective</button>
-                    <button className='subgenre' id="46" onClick={() => genreButton(46)}>Spy Detective</button>
-                    <button className='subgenre' id="47" onClick={() => genreButton(47)}>Fantasy Detective</button>
-                    <div className='main_genre' id="17" onClick={() => genreButton(17)}>RPG</div>
-                    <button className='subgenre' id="48" onClick={() => genreButton(48)}>Literature RPG</button>
-                    <button className='subgenre' id="49" onClick={() => genreButton(49)}>Real Literature RPG</button>
-                    <div className='main_genre' id="16" >Supernatural</div>
-                    <button className='subgenre' id="54" onClick={() => genreButton(54)}>Thriller</button>
-                    <button className='subgenre' id="55" onClick={() => genreButton(55)}>Horror</button>
-                    <button className='subgenre' id="56" onClick={() => genreButton(56)}>Mysticism</button>
-                    <div className='main_genre' id="15">Adventure</div>
-                    <button className='subgenre' id="57" onClick={() => genreButton(57)}>Adventure</button>
-                    <button className='subgenre' id="58" onClick={() => genreButton(58)}>Historical Adventure</button>
-                </div>
-                    <div className='genre_colum_two'>
-                        <div className='main_genre' id="9" onClick={() => genreButton(9)}>Travelers (Isekai)</div>
-                        <button className='subgenre' id="26" onClick={() => genreButton(26)}>Time Travelers</button>
-                        <button className='subgenre' id="28" onClick={() => genreButton(28)}>Travelers to Magical Worlds</button>
-                        <button className='subgenre' id="27" onClick={() => genreButton(27)}>Space Travelers</button>
-                        <button className='subgenre' id="8" onClick={() => genreButton(8)}>Science Fiction</button>
-                        <button className='subgenre' id="32" onClick={() => genreButton(32)}>Action Science Fiction</button>
-                        <button className='subgenre' id="33" onClick={() => genreButton(33)}>Alternate History</button>
-                        <button className='subgenre' id="34" onClick={() => genreButton(34)}>Space Opera</button>
-                        <button className='subgenre' id="35" onClick={() => genreButton(35)}>Social Science Fiction</button>
-                        <button className='subgenre' id="36" onClick={() => genreButton(36)}>Post-Apocalyptic</button>
-                        <button className='subgenre' id="37" onClick={() => genreButton(37)}>Hard Science Fiction</button>
-                        <button className='subgenre' id="38" onClick={() => genreButton(38)}>Humorous Science Fiction</button>
-                        <button className='subgenre' id="39" onClick={() => genreButton(39)}>Dystopian</button>
-                        <button className='subgenre' id="40" onClick={() => genreButton(40)}>Cyberpunk</button>
-                        <button className='subgenre' id="41" onClick={() => genreButton(41)}>Heroic Science Fiction</button>
-                        <button className='subgenre' id="42" onClick={() => genreButton(42)}>Steampunk</button>
-                        <div className='main_genre' id="11">Prose</div>
-                        <button className='subgenre' id="50" onClick={() => genreButton(50)}>Contemporary Prose</button>
-                        <button className='subgenre' id="51" onClick={() => genreButton(51)}>Historical Prose</button>
-                        <button className='subgenre' id="52" onClick={() => genreButton(52)}>Young Adult Prose</button>
-                        <button className='subgenre' id="53" onClick={() => genreButton(53)}>Documentary Prose</button>
-                        <div className='main_genre' id="12">Erotic</div>
-                        <button className='subgenre' id="63" onClick={() => genreButton(63)}>Romantic Erotica</button>
-                        <button className='subgenre' id="64" onClick={() => genreButton(64)}>Erotic Fantasy</button>
-                        <button className='subgenre' id="65" onClick={() => genreButton(65)}>Erotic Science Fiction</button>
-                        <button className='subgenre' id="66" onClick={() => genreButton(66)}>Erotic Fanfiction</button>
-                        <div className='main_genre' id="13">FanFiction</div>
-                        <button className='subgenre' id="61" onClick={() => genreButton(61)}>FanFiction</button>
-                        <div className='main_genre' id="14">Action</div>
-                        <button className='subgenre' id="59" onClick={() => genreButton(59)}>Action</button>
-                        <button className='subgenre' id="60" onClick={() => genreButton(60)}>Historical Action</button>
-                    </div>
+            <div className='genre_colum_one'>
+                <div className='main_genre' id="2">Fantasy</div>
+                <button className='subgenre' id="3" onClick={() => genreButton(3,'Romantic Fantasy')}>Romantic Fantasy</button>
+                <button className='subgenre' id="4" onClick={() => genreButton(4,'Action Fantasy')}>Action Fantasy</button>
+                <button className='subgenre' id="5" onClick={() => genreButton(5,'Urban Fantasy')}>Urban Fantasy</button>
+                <button className='subgenre' id="6" onClick={() => genreButton(6,'Dark Fantasy')}>Dark Fantasy</button>
+                <button className='subgenre' id="19" onClick={() => genreButton(19,'Humorous Fantasy')}>Humorous Fantasy</button>
+                <button className='subgenre' id="20" onClick={() => genreButton(20,'Heroic Fantasy')}>Heroic Fantasy</button>
+                <button className='subgenre' id="22" onClick={() => genreButton(22,'Noble Fantasy')}>Noble Fantasy</button>
+                <button className='subgenre' id="21" onClick={() => genreButton(21,'Epic Fantasy')}>Epic Fantasy</button>
+                <button className='subgenre' id="23" onClick={() => genreButton(23,'Historical Fantasy')}>Historical Fantasy</button>
+                <button className='subgenre' id="24" onClick={() => genreButton(24,'Magic Academy')}>Magic Academy</button>
+                <button className='subgenre' id="25" onClick={() => genreButton(25,'Wuxia')}>Wuxia</button>
+
+                <div className='main_genre' id="7">Romance Novels</div>
+                <button className='subgenre' id="29" onClick={() => genreButton(29,'Romance Novel')}>Romance Novel</button>
+                <button className='subgenre' id="30" onClick={() => genreButton(30,'Contemporary Romance Novel')}>Contemporary Romance Novel</button>
+                <button className='subgenre' id="31" onClick={() => genreButton(31,'Short Romance Novel')}>Short Romance Novel</button>
+                <button className='subgenre' id="43" onClick={() => genreButton(43,'Historical Romance Novel')}>Historical Romance Novel</button>
+                <button className='subgenre' id="44" onClick={() => genreButton(44,'Political Romance')}>Political Romance</button>
+
+                <button className='subgenre' id="10" onClick={() => genreButton(10,'Detective')}>Detective</button>
+                <button className='subgenre' id="45" onClick={() => genreButton(45,'Historical Detective')}>Historical Detective</button>
+                <button className='subgenre' id="46" onClick={() => genreButton(46,'Spy Detective')}>Spy Detective</button>
+                <button className='subgenre' id="47" onClick={() => genreButton(47,'Fantasy Detective')}>Fantasy Detective</button>
+
+                <div className='main_genre' id="17" onClick={() => genreButton(17,'RPG')}>RPG</div>
+                <button className='subgenre' id="48" onClick={() => genreButton(48,'Literature RPG')}>Literature RPG</button>
+                <button className='subgenre' id="49" onClick={() => genreButton(49,'Real Literature RPG')}>Real Literature RPG</button>
+
+                <div className='main_genre' id="16">Supernatural</div>
+                <button className='subgenre' id="54" onClick={() => genreButton(54,'Thriller')}>Thriller</button>
+                <button className='subgenre' id="55" onClick={() => genreButton(55,'Horror')}>Horror</button>
+                <button className='subgenre' id="56" onClick={() => genreButton(56,'Mysticism')}>Mysticism</button>
+
+                <div className='main_genre' id="15">Adventure</div>
+                <button className='subgenre' id="57" onClick={() => genreButton(57,'Adventure')}>Adventure</button>
+                <button className='subgenre' id="58" onClick={() => genreButton(58,'Historical Adventure')}>Historical Adventure</button>
+            </div>
+            <div className='genre_colum_two'>
+                <div className='main_genre' id="9" onClick={() => genreButton(9, 'Travelers (Isekai)')}>Travelers (Isekai)</div>
+                <button className='subgenre' id="26" onClick={() => genreButton(26, 'Time Travelers')}>Time Travelers</button>
+                <button className='subgenre' id="28" onClick={() => genreButton(28, 'Travelers to Magical Worlds')}>Travelers to Magical Worlds</button>
+                <button className='subgenre' id="27" onClick={() => genreButton(27, 'Space Travelers')}>Space Travelers</button>
+                <button className='subgenre' id="8" onClick={() => genreButton(8, 'Science Fiction')}>Science Fiction</button>
+                <button className='subgenre' id="32" onClick={() => genreButton(32, 'Action Science Fiction')}>Action Science Fiction</button>
+                <button className='subgenre' id="33" onClick={() => genreButton(33, 'Alternate History')}>Alternate History</button>
+                <button className='subgenre' id="34" onClick={() => genreButton(34, 'Space Opera')}>Space Opera</button>
+                <button className='subgenre' id="35" onClick={() => genreButton(35, 'Social Science Fiction')}>Social Science Fiction</button>
+                <button className='subgenre' id="36" onClick={() => genreButton(36, 'Post-Apocalyptic')}>Post-Apocalyptic</button>
+                <button className='subgenre' id="37" onClick={() => genreButton(37, 'Hard Science Fiction')}>Hard Science Fiction</button>
+                <button className='subgenre' id="38" onClick={() => genreButton(38, 'Humorous Science Fiction')}>Humorous Science Fiction</button>
+                <button className='subgenre' id="39" onClick={() => genreButton(39, 'Dystopian')}>Dystopian</button>
+                <button className='subgenre' id="40" onClick={() => genreButton(40, 'Cyberpunk')}>Cyberpunk</button>
+                <button className='subgenre' id="41" onClick={() => genreButton(41, 'Heroic Science Fiction')}>Heroic Science Fiction</button>
+                <button className='subgenre' id="42" onClick={() => genreButton(42, 'Steampunk')}>Steampunk</button>
+
+                <div className='main_genre' id="11" onClick={() => genreButton(11, 'Prose')}>Prose</div>
+                <button className='subgenre' id="50" onClick={() => genreButton(50, 'Contemporary Prose')}>Contemporary Prose</button>
+                <button className='subgenre' id="51" onClick={() => genreButton(51, 'Historical Prose')}>Historical Prose</button>
+                <button className='subgenre' id="52" onClick={() => genreButton(52, 'Young Adult Prose')}>Young Adult Prose</button>
+                <button className='subgenre' id="53" onClick={() => genreButton(53, 'Documentary Prose')}>Documentary Prose</button>
+
+                <div className='main_genre' id="12" onClick={() => genreButton(12, 'Erotic')}>Erotic</div>
+                <button className='subgenre' id="63" onClick={() => genreButton(63, 'Romantic Erotica')}>Romantic Erotica</button>
+                <button className='subgenre' id="64" onClick={() => genreButton(64, 'Erotic Fantasy')}>Erotic Fantasy</button>
+                <button className='subgenre' id="65" onClick={() => genreButton(65, 'Erotic Science Fiction')}>Erotic Science Fiction</button>
+                <button className='subgenre' id="66" onClick={() => genreButton(66, 'Erotic Fanfiction')}>Erotic Fanfiction</button>
+
+                <div className='main_genre' id="13" onClick={() => genreButton(13, 'FanFiction')}>FanFiction</div>
+                <button className='subgenre' id="61" onClick={() => genreButton(61, 'FanFiction')}>FanFiction</button>
+
+                <div className='main_genre' id="14" onClick={() => genreButton(14, 'Action')}>Action</div>
+                <button className='subgenre' id="59" onClick={() => genreButton(59, 'Action')}>Action</button>
+                <button className='subgenre' id="60" onClick={() => genreButton(60, 'Historical Action')}>Historical Action</button>
+            </div>
+
             </div>
             <div className='main_genre'>Miscellaneous</div>
             <div className='genre_colums'>
                 <div className='genre_colum_two'>
-                    <button className='subgenre' id="67" onClick={() => genreButton(67)}>Fairy Tale</button>
-                    <button className='subgenre' id="68" onClick={() => genreButton(68)}>Children's Literature</button>
-                    <button className='subgenre' id="69"onClick={() => genreButton(69)}>Humor</button>
-                    <button className='subgenre' id="70" onClick={() => genreButton(70)}>Poetry</button>
+                    <button className='subgenre' id="67" onClick={() => genreButton(67, 'Fairy Tale')}>Fairy Tale</button>
+                    <button className='subgenre' id="68" onClick={() => genreButton(68, 'Children\'s Literature')}>Children's Literature</button>
+                    <button className='subgenre' id="69" onClick={() => genreButton(69, 'Humor')}>Humor</button>
+                    <button className='subgenre' id="70" onClick={() => genreButton(70, 'Poetry')}>Poetry</button>
                 </div>
                 <div className='genre_colum_two'>
-                    <button className='subgenre' id="71" onClick={() => genreButton(71)}>Personal Development</button>
-                    <button className='subgenre' id="72" onClick={() => genreButton(72)}>Journalism</button>
-                    <button className='subgenre' id="73" onClick={() => genreButton(73)}>Business Literature</button>
-                    <button className='subgenre' id="74" onClick={() => genreButton(74)}>Poetry Collection</button>
+                    <button className='subgenre' id="71" onClick={() => genreButton(71, 'Personal Development')}>Personal Development</button>
+                    <button className='subgenre' id="72" onClick={() => genreButton(72, 'Journalism')}>Journalism</button>
+                    <button className='subgenre' id="73" onClick={() => genreButton(73, 'Business Literature')}>Business Literature</button>
+                    <button className='subgenre' id="74" onClick={() => genreButton(74, 'Poetry Collection')}>Poetry Collection</button>
                 </div>
             </div>
+
             {isGenreOpen && (
                 <div className="genre_detail_page">
                     <div className="genre_detail_content" onClick={(e) => e.stopPropagation()}>
@@ -187,9 +208,7 @@ function BookGenre(){
 <path d="M2 9.1371C2 14 6.01943 16.5914 8.96173 18.9109C10 19.7294 11 20.5 12 20.5C13 20.5 14 19.7294 15.0383 18.9109C17.9806 16.5914 22 14 22 9.1371C22 4.27416 16.4998 0.825464 12 5.50063C7.50016 0.825464 2 4.27416 2 9.1371Z" fill="#ffffff"/>
 </svg>Popular</div>
                         </div>
-                        {genreData.map((book) => (
-                        <div>
-                        <div className='genre_detail_views'>{book.genre}</div>
+                        <div className='genre_detail_views'>{selectedGenre}</div>
                         <ul className="genre_detail_log_nav">
                             <li onClick={() => genreFilterButton('today')}>Today</li>
                             <li onClick={() => genreFilterButton('yesterday')}>Yesterday</li>
@@ -197,23 +216,23 @@ function BookGenre(){
                             <li onClick={() => genreFilterButton('month_ago')}>Month Ago</li>
                             <li onClick={() => genreFilterButton('year_ago')}>Year Ago</li>
                         </ul>
-
-                        <div className='library_item_mobile' key={book.id}>
-                            <div className='library__item_content'>
-                            <a href={`book_detail/${book.id}`}>
-                                <div className='library_item-coverpage_mobile'>
-                                <img src={book.coverpage} alt={book.name} />
+                        <div className='genre_detail_items'>
+                        {sortedData.map((book) => (
+                            <div className='library_item_mobile' key={book.id}>
+                                <div className='library__item_content'>
+                                    <a href={`book_detail/${book.id}`}>
+                                        <div className='library_item-coverpage_mobile'>
+                                            <img src={book.coverpage} alt={book.name} />
+                                        </div>
+                                    </a>
+                                    <a href={`book_detail/${book.id}`}>
+                                        <div className='book-name_mobile'>{book.name}</div>
+                                    </a>
+                                    <div className='book-author'>{book.author}</div>
                                 </div>
-                            </a>
-                            <a href={`book_detail/${book.id}`}>
-                                <div className='book-name_mobile'>{book.name}</div>
-                            </a>
-                            <div className='book-author'>{book.author}</div>
                             </div>
-                        </div>
-                        </div>
                         ))}
-                        
+                        </div>
                     </div>
                 </div>
             )}

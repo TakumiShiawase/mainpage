@@ -251,7 +251,10 @@
     color: #858585;
     font-size: 20px;
 }
-
+.genre_detail_items{
+    display: flex;
+    flex-wrap: wrap;
+}
 .studio_mobile_link_button{
     color: white;
     font-size: 24px;
