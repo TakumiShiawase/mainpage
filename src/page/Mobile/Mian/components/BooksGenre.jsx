@@ -129,10 +129,11 @@ function BookGenre(){
                 <button className='subgenre' id="58" onClick={() => genreButton(58,'Historical Adventure')}>Historical Adventure</button>
             </div>
             <div className='genre_colum_two'>
-                <div className='main_genre' id="9" onClick={() => genreButton(9, 'Travelers (Isekai)')}>Travelers (Isekai)</div>
+                <div className='main_genre' id="9">Travelers (Isekai)</div>
                 <button className='subgenre' id="26" onClick={() => genreButton(26, 'Time Travelers')}>Time Travelers</button>
                 <button className='subgenre' id="28" onClick={() => genreButton(28, 'Travelers to Magical Worlds')}>Travelers to Magical Worlds</button>
                 <button className='subgenre' id="27" onClick={() => genreButton(27, 'Space Travelers')}>Space Travelers</button>
+                <div className='main_genre' id="8">Science Fiction</div>
                 <button className='subgenre' id="8" onClick={() => genreButton(8, 'Science Fiction')}>Science Fiction</button>
                 <button className='subgenre' id="32" onClick={() => genreButton(32, 'Action Science Fiction')}>Action Science Fiction</button>
                 <button className='subgenre' id="33" onClick={() => genreButton(33, 'Alternate History')}>Alternate History</button>
