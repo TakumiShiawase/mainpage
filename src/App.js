@@ -810,7 +810,8 @@ function BookItem() {
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/`);
-        setBooks(response.data);
+        setBooks(response.data.results);
+        console.log(response)
       } catch (error) {
         console.error('Error fetching books:', error);
       }
