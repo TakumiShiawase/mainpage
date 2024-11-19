@@ -49,6 +49,8 @@ import UpdateMobile from './page/Mobile/Mian/components/UpdateMobile.jsx';
 import BookGenre from './page/Mobile/Mian/components/BooksGenre.jsx';
 import MobileReader from './page/Mobile/Mian/components/MobileReader.jsx';
 import HistoryMobile from './page/Mobile/Mian/components/HistoryMobile.jsx';
+import MobileProfile from './page/Mobile/Mian/components/MobileProfile.jsx';
+import MobileAuthorProfile from './page/Mobile/Mian/components/MobileAuthorProfile.jsx';
 import './page/Mobile/Mian/MobileMain.css'
 
 
@@ -95,6 +97,8 @@ function App() {
           <Route path='/myLibrary' element={<LoginLibrary />} />
           <Route path='/update' element={<UpdateMobile/>} />
           <Route path='/history' element={<HistoryMobile />} />
+          <Route path='/profile' element={<MobileProfile />}/>
+          <Route path='/author/:username' element={<MobileAuthorProfile/>}/>
         </Route>
         <Route path="/login" element={<MobileLogin />} />
         <Route path="/register" element={<MobileRegister />} />
@@ -127,6 +131,7 @@ function App() {
             <Route path='/studio/studio-series' element={<StudioSeries />} />
             <Route path='/studio/studio-comments' element={<StudioComments />} />
           </Route>
+          <Route path='/test' element={<ReaderNew/>}/>
         </Routes>)}
       </SearchProvider>
     </Router>
@@ -4035,7 +4040,7 @@ function ReaderMain() {
         <ReaderSidebar book_id={book_id} onSelectChapter={handleChapterSelect}/>
         <div className='reader'>
           {chapters.map((chapter) => (
-            <div key={chapter.id} id={`chapter_${chapter.id}`}> {/* Добавьте id для каждой главы */}
+            <div key={chapter.id} id={`chapter_${chapter.id}`}> 
               <div className='title'>{chapter.title}</div>
               <hr className='top-line' />
               <div className='book_container'>
@@ -4050,6 +4055,46 @@ function ReaderMain() {
       </div>
     </main>
   );
+}
+
+function ReaderNew(){
+  const [openSettings, setOpenSettings] = useState(false);
+  const [barSwitch, setBarSwitch] = useState(1);
+
+  const switchSidebar = () => {
+    setBarSwitch(barSwitch === 1 ? 2 : 1);
+};
+
+  return(
+    <div className='reader_new'>
+      <header>
+        <button onClick={switchSidebar}>        <svg className='burger-icon' version="1.0" xmlns="http://www.w3.org/2000/svg"
+  width="42" height="42" viewBox="0 0 50.000000 50.000000" 
+  preserveAspectRatio="xMidYMid meet">
+
+  <g transform="translate(0.000000,50.000000) scale(0.100000,-0.100000)" 
+    stroke="none">
+    <path d="M56 444 c-24 -23 -24 -365 0 -388 23 -24 365 -24 388 0 24 23 24 365
+      0 388 -23 24 -365 24 -388 0z m379 -194 l0 -185 -185 0 -185 0 -3 175 c-1 96
+      0 180 3 187 3 11 44 13 187 11 l183 -3 0 -185z"/>
+    <path d="M120 340 c0 -6 50 -10 130 -10 80 0 130 4 130 10 0 6 -50 10 -130 10
+      -80 0 -130 -4 -130 -10z"/>
+    <path d="M120 250 c0 -6 50 -10 130 -10 80 0 130 4 130 10 0 6 -50 10 -130 10
+      -80 0 -130 -4 -130 -10z"/>
+    <path d="M120 160 c0 -6 50 -10 130 -10 80 0 130 4 130 10 0 6 -50 10 -130 10
+      -80 0 -130 -4 -130 -10z"/>
+  </g>
+</svg></button>
+        <div>
+          <div></div>
+          <div></div>
+          <button></button>
+        </div>
+      </header>
+      {/* {barSwitch === 1 ? <SidebarMenu /> : <SidebarMenu2/>} */}
+      <div></div>
+    </div>
+  )
 }
 
 function ReaderSidebar({ book_id, onSelectChapter }) {
@@ -7515,7 +7560,7 @@ function BookPageNew() {
         };
     
 
-        const bookResponse = await axios.get(`${apiUrl}/api/book_detail/${book_id}/`, { headers });
+        const bookResponse = await axios.get(`${apiUrl}/api/book_detail/${book_id}/`, { headers  });
         
         if (bookResponse.status === 200) {
           setBookData(bookResponse.data);

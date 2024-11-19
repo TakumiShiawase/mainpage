@@ -5387,3 +5387,8 @@ rect {
   display: flex;
   margin-top: 280px;
 }
+
+.reader_new{
+  width: 100%;
+  min-height: 100vh;
+}

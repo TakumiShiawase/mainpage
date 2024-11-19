@@ -1,31 +1,23 @@
 import React, {useState, useEffect, useHistory, useCallback, useRef, useLayoutEffect,createContext, useContext} from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, Outlet, useNavigate, NavLink, useParams,useLocation, Switch, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import apiUrl from '../../../../apiUrl';
+import apiUrl from '../../../../apiUrl.jsx';
 import { jwtDecode } from 'jwt-decode';
 import { useSwipeable } from 'react-swipeable';
 import { motion } from 'framer-motion';
 import ProfileLibrary from './ProfileLibrary.jsx';
-import MobileBookProfile from './MobileProfileBooks.jsx';
-import MobileProfileComment from './MobileProfileComment.jsx';
 
 
-function MobileProfile() {
+function MobileAuthorProfile() {
     const [profileData, setProfileData] = useState('');
     const [library, setLibrary] = useState(false);
-    const [books, setBooks] = useState(false);
-    const [comment, setComment] = useState(false);
-    const token = localStorage.getItem('token');
+    const { username } = useParams();
 
     useEffect(() => {
         const fetchProfile = async () => {
           try {
-            const decodedToken = jwtDecode(token);
-            const username = decodedToken.username;
             const response = await axios.get(`${apiUrl}/users/api/${username}/`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
+
             });
             setProfileData(response.data);
           } catch (err) {
@@ -37,7 +29,7 @@ function MobileProfile() {
         };
     
         fetchProfile();
-      }, [token]);
+      }, []);
       if (!profileData) {
         // Можно добавить индикатор загрузки, пока данные не загружены
         return <div>Loading...</div>;
@@ -45,13 +37,6 @@ function MobileProfile() {
     const libraryOpen = () => {
       setLibrary(!library);
     }
-    const booksOpen = () => {
-      setBooks(!books);
-    }
-    const commentOpen = () => {
-      setComment(!comment);
-    }
-
     return(
         <div>
             <img className='mobile_profile__banner' src={profileData.banner_image} alt="" />
@@ -84,23 +69,9 @@ function MobileProfile() {
                 <div className={`mobile_profile_library ${library ? 'open' : ''}`}>
                   <ProfileLibrary/>
                 </div>
-                <button className='mobile_profile_menu_buttons' onClick={booksOpen}>
-                    <div>Books</div>
-                    <div className={`button_toggle ${books ? 'open' : ''}`}></div>
-                </button>
-                <div className={`mobile_profile_library ${books ? 'open' : ''}`}>
-                  <MobileBookProfile avatar={profileData.profileimg} username={profileData.user.username}/>
-                </div>
-                <button className='mobile_profile_menu_buttons' onClick={commentOpen}>
-                    <div>Comment</div>
-                    <div className={`button_toggle ${comment ? 'open' : ''}`}></div>
-                </button>
-                <div className={`mobile_profile_library ${comment ? 'open' : ''}`}>
-                  <MobileProfileComment avatar={profileData.profileimg} username={profileData.user.username}/>
-                </div>
             </div>
         </div>
     )
 }
 
-export default MobileProfile;
+export default MobileAuthorProfile;
